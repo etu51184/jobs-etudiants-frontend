@@ -1,7 +1,6 @@
-// src/components/AddJobForm.jsx
 import { useState } from 'react';
 import './AddJobForm.css';
-import '../App.css'; // pour le style de job-card
+import '../App.css';
 
 function AddJobForm({ onAdd }) {
   const [title, setTitle] = useState('');
@@ -9,6 +8,8 @@ function AddJobForm({ onAdd }) {
   const [hours, setHours] = useState('');
   const [salary, setSalary] = useState('');
   const [contractType, setContractType] = useState('Job étudiant');
+  const [expiresInDays, setExpiresInDays] = useState(30);
+  const [contact, setContact] = useState('');
   const [description, setDescription] = useState('');
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
@@ -19,6 +20,8 @@ function AddJobForm({ onAdd }) {
     setHours('');
     setSalary('');
     setContractType('Job étudiant');
+    setExpiresInDays(30);
+    setContact('');
     setDescription('');
   };
 
@@ -28,7 +31,16 @@ function AddJobForm({ onAdd }) {
     const confirmed = window.confirm("Êtes-vous sûr de vouloir publier cette annonce ?");
     if (!confirmed) return;
 
-    const newJob = { title, location, hours, salary, contractType, description };
+    const newJob = {
+      title,
+      location,
+      hours,
+      salary,
+      contractType,
+      expiresInDays,
+      contact,
+      description
+    };
 
     fetch('https://jobs-etudiants-backend.onrender.com/api/jobs', {
       method: 'POST',
@@ -65,6 +77,24 @@ function AddJobForm({ onAdd }) {
           <option value="Bénévolat">Bénévolat</option>
         </select>
 
+        <input
+          type="number"
+          min="1"
+          max="30"
+          placeholder="Durée de publication (en jours)"
+          value={expiresInDays}
+          onChange={(e) => setExpiresInDays(e.target.value)}
+          required
+        />
+
+        <input
+          type="text"
+          placeholder="Moyen de contact (email, téléphone, sur place...)"
+          value={contact}
+          onChange={(e) => setContact(e.target.value)}
+          required
+        />
+
         <textarea placeholder="Description du poste" value={description} onChange={(e) => setDescription(e.target.value)} required />
 
         <button type="submit">Ajouter l’annonce</button>
@@ -74,13 +104,15 @@ function AddJobForm({ onAdd }) {
       </form>
 
       {/* LIVE PREVIEW */}
-      {(title || location || hours || salary || description) && (
+      {(title || location || hours || salary || description || contact) && (
         <div className="job-card">
           <h2>{title || 'Titre du job'}</h2>
           <p><strong>Lieu :</strong> {location || 'Non spécifié'}</p>
           <p><strong>Heures :</strong> {hours || 'Non spécifié'}</p>
           <p><strong>Rémunération :</strong> {salary || 'Non spécifié'}</p>
           <p><strong>Type :</strong> {contractType}</p>
+          <p><strong>Contact :</strong> {contact || 'Non spécifié'}</p>
+          <p><strong>Expire dans :</strong> {expiresInDays} jours</p>
           <p>{description || 'Description du poste...'}</p>
         </div>
       )}
