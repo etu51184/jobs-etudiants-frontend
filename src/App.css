@@ -12,6 +12,15 @@ html, body, #root {
   max-width: 1200px;
   margin: 0 auto;
   padding: 2rem 1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.container h2,
+.container p,
+.container form {
+  text-align: center;
 }
 
 /* === NAVIGATION BAR === */
