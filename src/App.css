@@ -29,30 +29,60 @@ html, body, #root {
   z-index: 1000;
 }
 
-.nav-left,
-.nav-right,
-.nav-center {
-  display: flex;
-  align-items: center;
-  gap: 2rem;
-}
-
 .logo {
   font-size: 1.8rem;
   font-weight: bold;
   color: white;
 }
 
-.nav-bar a {
+.nav-toggle {
+  display: none;
+  font-size: 2rem;
+  background: none;
+  border: none;
+  color: white;
+  cursor: pointer;
+}
+
+.nav-links {
+  display: flex;
+  gap: 2rem;
+}
+
+.nav-links a {
   color: white;
   text-decoration: none;
   font-weight: 600;
   transition: color 0.2s ease;
 }
 
-.nav-bar a:hover {
+.nav-links a:hover {
   color: #00cc66;
   text-decoration: underline;
+}
+
+/* === RESPONSIVE NAVIGATION === */
+@media (max-width: 768px) {
+  .nav-toggle {
+    display: block;
+  }
+
+  .nav-links {
+    display: none;
+    flex-direction: column;
+    background-color: #1e1e1e;
+    position: absolute;
+    top: 80px;
+    right: 0;
+    padding: 1rem;
+    width: 200px;
+    border-left: 1px solid #333;
+    border-bottom: 1px solid #333;
+  }
+
+  .nav-links.show {
+    display: flex;
+  }
 }
 
 /* === AUTH MESSAGE === */
