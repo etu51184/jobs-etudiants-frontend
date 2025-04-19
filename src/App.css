@@ -35,15 +35,7 @@ html, body, #root {
   color: white;
 }
 
-.nav-toggle {
-  display: none;
-  font-size: 2rem;
-  background: none;
-  border: none;
-  color: white;
-  cursor: pointer;
-}
-
+/* Navigation links */
 .nav-links {
   display: flex;
   gap: 2rem;
@@ -61,7 +53,17 @@ html, body, #root {
   text-decoration: underline;
 }
 
-/* === RESPONSIVE NAVIGATION === */
+/* === MENU TOGGLE === */
+.nav-toggle {
+  display: none;
+  font-size: 2rem;
+  background: none;
+  border: none;
+  color: white;
+  cursor: pointer;
+}
+
+/* === RESPONSIVE (MOBILE) === */
 @media (max-width: 768px) {
   .nav-toggle {
     display: block;
