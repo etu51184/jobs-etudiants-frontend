@@ -1,5 +1,5 @@
 // src/pages/PostJobPage.jsx
-import AddJobForm from '../components/AddJobForm';
+import AddJobForm from '../components/AddJobForm/AddJobForm';
 import '../App.css';
 
 function PostJobPage() {
