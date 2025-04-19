@@ -1,3 +1,4 @@
+// src/components/AddJobForm/AddJobForm.jsx
 import { useState } from 'react';
 import './AddJobForm.css';
 import '../../App.css';
@@ -47,6 +48,8 @@ function AddJobForm({ onAdd }) {
     const confirmed = window.confirm("Êtes-vous sûr de vouloir publier cette annonce ?");
     if (!confirmed) return;
 
+    const username = localStorage.getItem('username');
+
     const newJob = {
       title,
       location,
@@ -61,7 +64,7 @@ function AddJobForm({ onAdd }) {
       endDate,
       fullTime,
       expiresInDays,
-      id: Date.now()
+      createdBy: username
     };
 
     fetch('https://jobs-etudiants-backend.onrender.com/api/jobs', {
@@ -91,67 +94,26 @@ function AddJobForm({ onAdd }) {
 
         <input type="text" placeholder="Titre du job" value={title} onChange={(e) => setTitle(e.target.value)} required />
         <input type="text" placeholder="Lieu" value={location} onChange={(e) => setLocation(e.target.value)} required />
-
-        {/* Champ Description global */}
-        <input
-          type="text"
-          placeholder="Description du poste"
-          value={description}
-          onChange={(e) => setDescription(e.target.value)}
-          required
-        />
+        <input type="text" placeholder="Description du poste" value={description} onChange={(e) => setDescription(e.target.value)} required />
+        <input type="text" placeholder="Contact" value={contact} onChange={(e) => setContact(e.target.value)} required />
 
         {contractType === 'Job étudiant' && (
-          <StudentJobFields
-            days={days}
-            setDays={setDays}
-            schedule={schedule}
-            setSchedule={setSchedule}
-            salary={salary}
-            setSalary={setSalary}
-          />
+          <StudentJobFields days={days} setDays={setDays} schedule={schedule} setSchedule={setSchedule} salary={salary} setSalary={setSalary} />
         )}
 
         {contractType === 'Stage' && (
-          <StageFields
-            duration={duration}
-            setDuration={setDuration}
-            schedule={schedule}
-            setSchedule={setSchedule}
-            contact={contact}
-            setContact={setContact}
-          />
+          <StageFields duration={duration} setDuration={setDuration} schedule={schedule} setSchedule={setSchedule} />
         )}
 
         {contractType === 'CDD' && (
-          <CddFields
-            startDate={startDate}
-            setStartDate={setStartDate}
-            endDate={endDate}
-            setEndDate={setEndDate}
-            fullTime={fullTime}
-            setFullTime={setFullTime}
-          />
+          <CddFields startDate={startDate} setStartDate={setStartDate} endDate={endDate} setEndDate={setEndDate} fullTime={fullTime} setFullTime={setFullTime} />
         )}
 
         {contractType === 'Bénévolat' && (
-          <VolunteerFields
-            contact={contact}
-            setContact={setContact}
-            schedule={schedule}
-            setSchedule={setSchedule}
-          />
+          <VolunteerFields schedule={schedule} setSchedule={setSchedule} />
         )}
 
-        <input
-          type="number"
-          min="1"
-          max="30"
-          placeholder="Durée de publication (en jours)"
-          value={expiresInDays}
-          onChange={(e) => setExpiresInDays(e.target.value)}
-          required
-        />
+        <input type="number" min="1" max="30" placeholder="Durée de publication (en jours)" value={expiresInDays} onChange={(e) => setExpiresInDays(e.target.value)} required />
 
         <button type="submit">Ajouter l’annonce</button>
 
@@ -159,7 +121,6 @@ function AddJobForm({ onAdd }) {
         {error && <p style={{ color: 'red', marginTop: '1rem' }}>{error}</p>}
       </form>
 
-      {/* LIVE PREVIEW */}
       {(title || location || contractType || description) && (
         <JobPreview
           title={title}

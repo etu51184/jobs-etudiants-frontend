@@ -1,5 +1,5 @@
 // src/components/AddJobForm/StageFields.jsx
-function StageFields({ duration, setDuration, schedule, setSchedule, contact, setContact }) {
+function StageFields({ duration, setDuration, schedule, setSchedule }) {
   return (
     <>
       <input
@@ -10,15 +10,9 @@ function StageFields({ duration, setDuration, schedule, setSchedule, contact, se
       />
       <input
         type="text"
-        placeholder="Horaire (ex: 9h-17h)"
+        placeholder="Horaires (ex: 9h-17h)"
         value={schedule}
         onChange={(e) => setSchedule(e.target.value)}
-      />
-      <input
-        type="text"
-        placeholder="Contact"
-        value={contact}
-        onChange={(e) => setContact(e.target.value)}
       />
     </>
   );
