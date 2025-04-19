@@ -1,13 +1,7 @@
 // src/components/AddJobForm/VolunteerFields.jsx
-function VolunteerFields({ description, setDescription, contact, setContact, schedule, setSchedule }) {
+function VolunteerFields({ contact, setContact, schedule, setSchedule }) {
   return (
     <>
-      <input
-        type="text"
-        placeholder="Mission"
-        value={description}
-        onChange={(e) => setDescription(e.target.value)}
-      />
       <input
         type="text"
         placeholder="Contact"

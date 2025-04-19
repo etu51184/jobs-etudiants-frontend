@@ -24,7 +24,9 @@ function JobPreview({
       {duration && <p><strong>Durée :</strong> {duration}</p>}
       {startDate && <p><strong>Début :</strong> {startDate}</p>}
       {endDate && <p><strong>Fin :</strong> {endDate}</p>}
-      {typeof fullTime === 'boolean' && <p><strong>Temps plein :</strong> {fullTime ? 'Oui' : 'Non'}</p>}
+      {contractType === 'CDD' && typeof fullTime === 'boolean' && (
+        <p><strong>Temps plein :</strong> {fullTime ? 'Oui' : 'Non'}</p>
+        )}
       {contact && <p><strong>Contact :</strong> {contact}</p>}
       <p>{description}</p>
     </div>

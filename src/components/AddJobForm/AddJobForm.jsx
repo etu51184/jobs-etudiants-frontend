@@ -71,7 +71,7 @@ function AddJobForm({ onAdd }) {
     })
       .then(res => res.json())
       .then(data => {
-        onAdd(data);
+        onAdd?.(data);
         setMessage('Job publié avec succès !');
         setError('');
         clearForm();
@@ -91,6 +91,15 @@ function AddJobForm({ onAdd }) {
 
         <input type="text" placeholder="Titre du job" value={title} onChange={(e) => setTitle(e.target.value)} required />
         <input type="text" placeholder="Lieu" value={location} onChange={(e) => setLocation(e.target.value)} required />
+
+        {/* Champ Description global */}
+        <input
+          type="text"
+          placeholder="Description du poste"
+          value={description}
+          onChange={(e) => setDescription(e.target.value)}
+          required
+        />
 
         {contractType === 'Job étudiant' && (
           <StudentJobFields
@@ -127,8 +136,6 @@ function AddJobForm({ onAdd }) {
 
         {contractType === 'Bénévolat' && (
           <VolunteerFields
-            description={description}
-            setDescription={setDescription}
             contact={contact}
             setContact={setContact}
             schedule={schedule}

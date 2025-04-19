@@ -13,13 +13,15 @@ function StudentJobFields({ days, setDays, schedule, setSchedule, salary, setSal
       <div>
         <label>Jours de la semaine :</label><br />
         {['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi', 'Dimanche'].map(day => (
-          <label key={day} style={{ marginRight: '1rem' }}>
+          <label key={day} style={{ marginRight: '1.5rem', display: 'inline-flex', alignItems: 'center', gap: '0.5rem' }}>
+            <span>{day}</span>
             <input
-              type="checkbox"
-              checked={days.includes(day)}
-              onChange={() => toggleDay(day)}
-            /> {day}
-          </label>
+                type="checkbox"
+                checked={days.includes(day)}
+                onChange={() => toggleDay(day)}
+            />
+            </label>
+
         ))}
       </div>
       <input
