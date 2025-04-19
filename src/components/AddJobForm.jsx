@@ -12,7 +12,7 @@ function AddJobForm({ onAdd }) {
     e.preventDefault();
     const newJob = { title, location, hours, description };
 
-    fetch('https://jobs-etudiants-backend.onrender.com/annonces', {
+    fetch('https://jobs-etudiants-backend.onrender.com/api/jobs', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(newJob)

@@ -7,7 +7,7 @@ function App() {
   const [jobs, setJobs] = useState([]);
 
   useEffect(() => {
-    fetch('https://jobs-etudiants-backend.onrender.com/annonces')
+    fetch('https://jobs-etudiants-backend.onrender.com/api/jobs')
       .then(res => res.json())
       .then(data => setJobs(data))
       .catch(err => console.error('Error while fetching jobs:', err));

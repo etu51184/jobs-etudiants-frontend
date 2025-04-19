@@ -1,6 +1,12 @@
 .job-card {
-  border: 1px solid #ddd;
+  border: 1px solid #ccc;
   padding: 1rem;
   margin-bottom: 1rem;
-  border-radius: 5px;
+  border-radius: 8px;
+  background-color: #f9f9f9;
+  transition: box-shadow 0.2s ease;
+}
+
+.job-card:hover {
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
