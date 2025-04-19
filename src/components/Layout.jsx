@@ -10,18 +10,24 @@ function Layout() {
     setMenuOpen(!menuOpen);
   };
 
+  const closeMenu = () => {
+    setMenuOpen(false);
+  };
+
   return (
     <>
       <header className="nav-bar">
-        <h1 className="logo">Student Jobs in Namur</h1>
-        <button className="nav-toggle" onClick={toggleMenu}>
+        <div className="logo">Student Jobs in Namur</div>
+        
+        <nav className={`nav-links ${menuOpen ? 'show' : ''}`}>
+          <Link to="/" onClick={closeMenu}>Home</Link>
+          <Link to="/auth" onClick={closeMenu}>Login / Sign up</Link>
+          <Link to="/post" onClick={closeMenu}>Post a Job</Link>
+        </nav>
+
+        <button className="nav-toggle" onClick={toggleMenu} aria-label="Toggle navigation">
           &#x2630;
         </button>
-        <nav className={`nav-links ${menuOpen ? 'show' : ''}`}>
-          <Link to="/" onClick={() => setMenuOpen(false)}>Home</Link>
-          <Link to="/auth" onClick={() => setMenuOpen(false)}>Login / Sign up</Link>
-          <Link to="/post" onClick={() => setMenuOpen(false)}>Post a Job</Link>
-        </nav>
       </header>
 
       <main className="container">
