@@ -5,18 +5,21 @@ import '../App.css';
 function Layout() {
   return (
     <>
-      <div className="nav-bar">
-        <h1 className="logo">Student Jobs in Namur</h1>
-        <nav>
+      <header className="nav-bar">
+        <div className="nav-left">
+          <h1 className="logo">Student Jobs in Namur</h1>
+        </div>
+
+        <div className="nav-right">
           <Link to="/">Home</Link>
           <Link to="/auth">Login / Sign up</Link>
           <Link to="/post">Post a Job</Link>
-        </nav>
-      </div>
+        </div>
+      </header>
 
-      <div className="container">
+      <main className="container">
         <Outlet />
-      </div>
+      </main>
     </>
   );
 }

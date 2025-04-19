@@ -1,4 +1,4 @@
-/* Global Reset */
+/* === RESET & BASE === */
 html, body, #root {
   margin: 0;
   padding: 0;
@@ -8,37 +8,39 @@ html, body, #root {
   color: #eaeaea;
 }
 
-/* Layout container */
 .container {
   max-width: 1200px;
   margin: 0 auto;
   padding: 2rem 1rem;
 }
 
-/* Navigation Bar */
+/* === NAVIGATION BAR === */
 .nav-bar {
-  position: sticky;
-  top: 0;
-  left: 0;
-  width: 100%;
-  z-index: 1000;
-  background-color: #1e1e1e;
   display: flex;
   justify-content: space-between;
   align-items: center;
   padding: 1.5rem 2rem;
+  background-color: #1e1e1e;
+  color: white;
   border-bottom: 1px solid #333;
+  position: sticky;
+  top: 0;
+  width: 100%;
+  z-index: 1000;
+}
+
+.nav-left,
+.nav-right,
+.nav-center {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
 }
 
 .logo {
   font-size: 1.8rem;
   font-weight: bold;
   color: white;
-}
-
-.nav-bar nav {
-  display: flex;
-  gap: 2rem;
 }
 
 .nav-bar a {
@@ -49,36 +51,18 @@ html, body, #root {
 }
 
 .nav-bar a:hover {
-  text-decoration: underline;
   color: #00cc66;
+  text-decoration: underline;
 }
 
-/* Auth messages */
+/* === AUTH MESSAGE === */
 .auth-message {
   margin-top: 1rem;
   font-size: 0.95rem;
   color: #00cc66;
 }
 
-/* Auth button (floating, optional) */
-.auth-button {
-  position: fixed;
-  top: 1rem;
-  right: 1rem;
-  background-color: #333;
-  color: white;
-  padding: 0.5rem 1rem;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  z-index: 1000;
-}
-
-.auth-button:hover {
-  background-color: #555;
-}
-
-/* Form Elements */
+/* === FORMS === */
 input, textarea {
   width: 100%;
   padding: 0.5rem;
@@ -102,7 +86,7 @@ button:hover {
   background-color: #555;
 }
 
-/* Job Card */
+/* === JOB CARD === */
 .job-card {
   background-color: #1e1e1e;
   color: #ffffff;
