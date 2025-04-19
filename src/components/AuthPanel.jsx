@@ -3,12 +3,12 @@ import { useState } from 'react';
 import './AuthPanel.css';
 import AddJobForm from './AddJobForm';
 
-function AuthPanel({ onLogin }) {
+function AuthPanel({ onLogin, username: initialUsername, onAddJob }) {
   const [isLoginMode, setIsLoginMode] = useState(true);
-  const [username, setUsername] = useState('');
+  const [username, setUsername] = useState(initialUsername || '');
   const [password, setPassword] = useState('');
   const [message, setMessage] = useState('');
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(!!initialUsername);
   const [showForm, setShowForm] = useState(false);
 
   const handleAuth = (e) => {
@@ -71,7 +71,10 @@ function AuthPanel({ onLogin }) {
           <button onClick={() => setShowForm(!showForm)}>
             {showForm ? 'Hide job form' : 'Post a job'}
           </button>
-          {showForm && <AddJobForm onAdd={() => setShowForm(false)} />}
+          {showForm && <AddJobForm onAdd={(job) => {
+            setShowForm(false);
+            onAddJob && onAddJob(job);
+          }} />}
         </>
       )}
     </div>

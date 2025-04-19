@@ -1,3 +1,4 @@
+// src/App.jsx
 import { useEffect, useState } from 'react';
 import './App.css';
 import Job from './components/Job';
@@ -5,21 +6,42 @@ import AuthPanel from './components/AuthPanel';
 
 function App() {
   const [jobs, setJobs] = useState([]);
+  const [loggedInUser, setLoggedInUser] = useState(null);
+  const [showAccountPanel, setShowAccountPanel] = useState(false);
 
   useEffect(() => {
+    // Load jobs
     fetch('https://jobs-etudiants-backend.onrender.com/api/jobs')
       .then(res => res.json())
       .then(data => setJobs(data))
       .catch(err => console.error('Error while fetching jobs:', err));
+
+    // Load user from localStorage
+    const storedUser = localStorage.getItem('username');
+    if (storedUser) {
+      setLoggedInUser(storedUser);
+    }
   }, []);
+
+  const handleLogin = (username) => {
+    setLoggedInUser(username);
+    localStorage.setItem('username', username);
+  };
 
   return (
     <div className="container">
-      <h1>Student Jobs in Namur</h1>
+      {/* Header */}
+      <div className="top-bar">
+        <h1>Student Jobs in Namur</h1>
+        <button className="auth-button" onClick={() => setShowAccountPanel(!showAccountPanel)}>
+          {showAccountPanel ? 'Close' : 'Account'}
+        </button>
+      </div>
+
       <p>Welcome to our job platform!</p>
 
       <div style={{ display: 'flex', alignItems: 'flex-start', gap: '2rem' }}>
-        {/* Job list (left side) */}
+        {/* Job list */}
         <div style={{ flex: 1 }}>
           {jobs.length === 0 ? (
             <p>No jobs available.</p>
@@ -30,8 +52,14 @@ function App() {
           )}
         </div>
 
-        {/* Auth panel (right side) */}
-        <AuthPanel onLogin={(username) => console.log('Logged in as:', username)} />
+        {/* Account panel */}
+        {showAccountPanel && (
+          <AuthPanel
+            onLogin={handleLogin}
+            username={loggedInUser}
+            onAddJob={(job) => setJobs((prev) => [...prev, job])}
+          />
+        )}
       </div>
     </div>
   );
