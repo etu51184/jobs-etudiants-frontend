@@ -12,15 +12,28 @@ html, body, #root {
   display: block;
 }
 
+/* === CONTAINER === */
 .container {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 2rem 3rem;
+  max-width: 1000px;
+  margin: 4rem auto;
+  padding: 2.5rem 4rem;
+  background-color: #181818;
+  border-radius: 12px;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
   box-sizing: border-box;
 }
 
-.container h2,
-.container p,
+.container h2 {
+  text-align: center;
+  font-size: 2rem;
+  margin-bottom: 1.5rem;
+}
+
+.container p {
+  text-align: center;
+  font-size: 1.2rem;
+}
+
 .container form {
   text-align: center;
 }
@@ -36,8 +49,9 @@ html, body, #root {
   border-bottom: 1px solid #333;
   position: sticky;
   top: 0;
-  width: 100%;
+  width: 100vw;
   z-index: 1000;
+  box-sizing: border-box;
 }
 
 .logo {
@@ -46,11 +60,12 @@ html, body, #root {
   color: white;
 }
 
-/* Navigation links aligned right */
+/* === NAVIGATION LINKS === */
 .nav-links {
   display: flex;
   gap: 2rem;
   align-items: center;
+  font-size: 1.1rem;
 }
 
 .nav-links a {
@@ -65,7 +80,7 @@ html, body, #root {
   text-decoration: underline;
 }
 
-/* === MENU TOGGLE === */
+/* === MOBILE MENU TOGGLE === */
 .nav-toggle {
   display: none;
   font-size: 2rem;
