@@ -1,30 +1,43 @@
 import { useEffect, useState } from 'react';
 import './App.css';
+import AddJobForm from './components/AddJobForm';
+import Job from './components/Job';
+
+{jobs.length === 0 ? (
+  <p>No jobs available.</p>
+) : (
+  jobs.map((job, index) => (
+    <Job key={index} data={job} />
+  ))
+)}
+
 
 function App() {
-  const [offres, setOffres] = useState([]);
+  const [jobs, setJobs] = useState([]);
 
   useEffect(() => {
-    fetch('https://jobs-etudiants-backend.onrender.com')
+    fetch('https://jobs-etudiants-backend.onrender.com/api/jobs')
       .then(res => res.json())
-      .then(data => setOffres(data))
-      .catch(err => console.error('Erreur lors du chargement des offres', err));
+      .then(data => setJobs(data))
+      .catch(err => console.error('Error while fetching jobs:', err));
   }, []);
 
   return (
     <div className="container">
-      <h1>Jobs étudiants à Namur</h1>
-      <p>Bienvenue sur notre plateforme !</p>
+      <h1>Student Jobs in Namur</h1>
+      <p>Welcome to our job platform!</p>
 
-      {offres.length === 0 ? (
-        <p>Aucune offre disponible.</p>
+      <AddJobForm onAdd={(job) => setJobs([...jobs, job])} />
+
+      {jobs.length === 0 ? (
+        <p>No jobs available.</p>
       ) : (
-        offres.map((offre, index) => (
-          <div key={index} className="annonce">
-            <h2>{offre.titre}</h2>
-            <p><strong>Lieu :</strong> {offre.lieu}</p>
-            <p><strong>Horaires :</strong> {offre.horaires}</p>
-            <p>{offre.description}</p>
+        jobs.map((job, index) => (
+          <div key={index} className="job-card">
+            <h2>{job.title}</h2>
+            <p><strong>Location:</strong> {job.location}</p>
+            <p><strong>Hours:</strong> {job.hours}</p>
+            <p>{job.description}</p>
           </div>
         ))
       )}
@@ -33,4 +46,3 @@ function App() {
 }
 
 export default App;
-
