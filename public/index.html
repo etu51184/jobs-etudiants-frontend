@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Jobs Étudiants Namur</title>
+  <style>
+    body { font-family: Arial; padding: 20px; max-width: 800px; margin: auto; }
+    .annonce { border: 1px solid #ccc; padding: 10px; margin: 10px 0; }
+    form { margin-bottom: 30px; background: #f9f9f9; padding: 20px; border-radius: 5px; }
+    input, textarea { display: block; width: 100%; margin-top: 5px; margin-bottom: 15px; padding: 8px; }
+    button { padding: 10px 15px; background: #007bff; color: white; border: none; cursor: pointer; }
+  </style>
+</head>
+<body>
+  <h1>Jobs Étudiants Namur</h1>
+
+  <div id="auth-zone">
+    <h2>🔐 Connexion</h2>
+    <input type="text" id="login-user" placeholder="Nom d'utilisateur">
+    <input type="password" id="login-pass" placeholder="Mot de passe">
+    <button id="btn-login">Se connecter</button>
+    <p id="login-status"></p>
+
+    <h3>Pas encore de compte ?</h3>
+    <input type="text" id="signup-user" placeholder="Créer un nom d'utilisateur">
+    <input type="password" id="signup-pass" placeholder="Créer un mot de passe">
+    <button id="btn-signup">Créer un compte</button>
+    <p id="signup-status"></p>
+  </div>
+
+  <div id="zone-utilisateur" style="display:none;">
+    <h2 id="bonjour"></h2>
+    <button id="logout-btn">Se déconnecter</button>
+
+    <form id="form-annonce">
+      <label>Titre du job
+        <input type="text" id="titre" required>
+      </label>
+      <label>Lieu
+        <input type="text" id="lieu" required>
+      </label>
+      <label>Durée
+        <input type="text" id="duree" required>
+      </label>
+      <label>Description
+        <textarea id="description" required></textarea>
+      </label>
+      <button type="submit">Publier l'annonce</button>
+    </form>
+  </div>
+
+  <h2>Annonces disponibles</h2>
+  <div id="liste-annonces"></div>
+
+  <script>
+    const BASE_URL = 'https://jobs-etudiants-backend.onrender.com';
+
+    const form = document.getElementById('form-annonce');
+    const liste = document.getElementById('liste-annonces');
+    const loginUser = document.getElementById('login-user');
+    const loginPass = document.getElementById('login-pass');
+    const btnLogin = document.getElementById('btn-login');
+    const loginStatus = document.getElementById('login-status');
+
+    const signupUser = document.getElementById('signup-user');
+    const signupPass = document.getElementById('signup-pass');
+    const btnSignup = document.getElementById('btn-signup');
+    const signupStatus = document.getElementById('signup-status');
+
+    const zoneUtilisateur = document.getElementById('zone-utilisateur');
+    const bonjour = document.getElementById('bonjour');
+    const logoutBtn = document.getElementById('logout-btn');
+
+    // Auth helpers
+    function getCurrentUser() {
+      return JSON.parse(localStorage.getItem('user')) || null;
+    }
+
+    function isAdmin() {
+      const user = getCurrentUser();
+      return user && user.isAdmin === true;
+    }
+
+    function afficherUtilisateur() {
+      const user = getCurrentUser();
+      if (!user) return;
+
+      document.getElementById('auth-zone').style.display = 'none';
+      zoneUtilisateur.style.display = 'block';
+      bonjour.textContent = `Bonjour ${user.username} ${isAdmin() ? "(admin)" : ""}`;
+    }
+
+    logoutBtn.addEventListener('click', () => {
+      localStorage.removeItem('user');
+      window.location.reload();
+    });
+
+    btnSignup.addEventListener('click', async () => {
+      const username = signupUser.value.trim();
+      const password = signupPass.value.trim();
+      if (!username || !password) return;
+
+      const res = await fetch(`${BASE_URL}/users`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, password }),
+      });
+
+      const data = await res.json();
+      signupStatus.textContent = data.message || data.error;
+    });
+
+    btnLogin.addEventListener('click', async () => {
+      const username = loginUser.value.trim();
+      const password = loginPass.value.trim();
+      if (!username || !password) return;
+
+      const res = await fetch(`${BASE_URL}/login`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, password }),
+      });
+
+      const data = await res.json();
+      if (res.ok) {
+        localStorage.setItem('user', JSON.stringify({ username, isAdmin: data.isAdmin }));
+        window.location.reload();
+      } else {
+        loginStatus.textContent = data.error || "Erreur";
+      }
+    });
+
+    async function chargerAnnonces() {
+      const res = await fetch(`${BASE_URL}/annonces`);
+      const annonces = await res.json();
+
+      liste.innerHTML = '';
+      annonces.reverse().forEach(({ id, titre, lieu, duree, description }) => {
+        const bloc = document.createElement('div');
+        bloc.className = 'annonce';
+        bloc.innerHTML = `
+          <h3>${titre}</h3>
+          <p><strong>Lieu :</strong> ${lieu}</p>
+          <p><strong>Durée :</strong> ${duree}</p>
+          <p><strong>Description :</strong> ${description}</p>
+          ${isAdmin() ? '<button class="supprimer-btn">🗑 Supprimer</button>' : ''}
+        `;
+
+        if (isAdmin()) {
+          const btnSupprimer = bloc.querySelector('.supprimer-btn');
+          btnSupprimer.addEventListener('click', async () => {
+            await fetch(`${BASE_URL}/annonces/${id}`, {
+              method: 'DELETE'
+            });
+            chargerAnnonces();
+          });
+        }
+
+        liste.appendChild(bloc);
+      });
+    }
+
+    form?.addEventListener('submit', async function(e) {
+      e.preventDefault();
+
+      const data = {
+        id: Date.now(),
+        titre: document.getElementById('titre').value,
+        lieu: document.getElementById('lieu').value,
+        duree: document.getElementById('duree').value,
+        description: document.getElementById('description').value,
+      };
+
+      await fetch(`${BASE_URL}/annonces`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data),
+      });
+
+      form.reset();
+      chargerAnnonces();
+    });
+
+    if (getCurrentUser()) {
+      afficherUtilisateur();
+    }
+
+    chargerAnnonces();
+  </script>
+</body>
+</html>
