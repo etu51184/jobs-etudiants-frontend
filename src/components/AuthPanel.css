@@ -1,0 +1,49 @@
+.auth-panel {
+  position: sticky;
+  top: 2rem;
+  right: 0;
+  width: 300px;
+  background-color: #1e1e1e;
+  padding: 1rem;
+  border-left: 2px solid #333;
+  color: white;
+  border-radius: 10px;
+  height: fit-content;
+}
+
+.auth-panel h2 {
+  margin-top: 0;
+  font-size: 1.4rem;
+  margin-bottom: 1rem;
+}
+
+.auth-panel form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.auth-panel input {
+  padding: 0.5rem;
+  border-radius: 5px;
+  border: none;
+}
+
+.auth-panel button {
+  padding: 0.5rem;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  background-color: #333;
+  color: white;
+}
+
+.auth-panel button:hover {
+  background-color: #555;
+}
+
+.auth-message {
+  margin-top: 0.5rem;
+  color: #00cc66;
+  font-size: 0.9rem;
+}

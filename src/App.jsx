@@ -1,12 +1,10 @@
 import { useEffect, useState } from 'react';
 import './App.css';
-import AddJobForm from './components/AddJobForm';
 import Job from './components/Job';
-import AuthModal from './components/AuthModal';
+import AuthPanel from './components/AuthPanel';
 
 function App() {
   const [jobs, setJobs] = useState([]);
-  const [showAuth, setShowAuth] = useState(false);
 
   useEffect(() => {
     fetch('https://jobs-etudiants-backend.onrender.com/api/jobs')
@@ -17,26 +15,24 @@ function App() {
 
   return (
     <div className="container">
-      {/* Barre du haut */}
-      <div className="top-bar">
-        <h1>Student Jobs in Namur</h1>
-        <button className="auth-button" onClick={() => setShowAuth(true)}>Login / Sign up</button>
-      </div>
-
+      <h1>Student Jobs in Namur</h1>
       <p>Welcome to our job platform!</p>
 
-      <AddJobForm onAdd={(job) => setJobs([...jobs, job])} />
+      <div style={{ display: 'flex', alignItems: 'flex-start', gap: '2rem' }}>
+        {/* Job list (left side) */}
+        <div style={{ flex: 1 }}>
+          {jobs.length === 0 ? (
+            <p>No jobs available.</p>
+          ) : (
+            jobs.map((job, index) => (
+              <Job key={index} data={job} />
+            ))
+          )}
+        </div>
 
-      {jobs.length === 0 ? (
-        <p>No jobs available.</p>
-      ) : (
-        jobs.map((job, index) => (
-          <Job key={index} data={job} />
-        ))
-      )}
-
-      {/* Popup d'authentification */}
-      {showAuth && <AuthModal onClose={() => setShowAuth(false)} />}
+        {/* Auth panel (right side) */}
+        <AuthPanel onLogin={(username) => console.log('Logged in as:', username)} />
+      </div>
     </div>
   );
 }
