@@ -4,6 +4,8 @@ import Layout from './components/Layout';
 import Home from './pages/Home';
 import AuthPage from './pages/AuthPage';
 import PostJobPage from './pages/PostJobPage';
+import JobDetails from './pages/JobDetails';
+
 
 function App() {
   return (
@@ -13,6 +15,8 @@ function App() {
           <Route index element={<Home />} />
           <Route path="auth" element={<AuthPage />} />
           <Route path="post" element={<PostJobPage />} />
+          <Route path="job/:id" element={<JobDetails />} />
+
         </Route>
       </Routes>
     </Router>
