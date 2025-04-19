@@ -3,15 +3,6 @@ import './App.css';
 import AddJobForm from './components/AddJobForm';
 import Job from './components/Job';
 
-{jobs.length === 0 ? (
-  <p>No jobs available.</p>
-) : (
-  jobs.map((job, index) => (
-    <Job key={index} data={job} />
-  ))
-)}
-
-
 function App() {
   const [jobs, setJobs] = useState([]);
 
@@ -33,12 +24,7 @@ function App() {
         <p>No jobs available.</p>
       ) : (
         jobs.map((job, index) => (
-          <div key={index} className="job-card">
-            <h2>{job.title}</h2>
-            <p><strong>Location:</strong> {job.location}</p>
-            <p><strong>Hours:</strong> {job.hours}</p>
-            <p>{job.description}</p>
-          </div>
+          <Job key={index} data={job} />
         ))
       )}
     </div>
