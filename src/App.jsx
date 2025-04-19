@@ -1,4 +1,3 @@
-// src/App.jsx
 import { useEffect, useState } from 'react';
 import './App.css';
 import Job from './components/Job';
@@ -29,39 +28,39 @@ function App() {
   };
 
   return (
-    <div className="container">
-      {/* Header */}
-      <div className="top-bar">
+    <>
+      {/* Floating account button */}
+      <button className="auth-button" onClick={() => setShowAccountPanel(!showAccountPanel)}>
+        {showAccountPanel ? 'Close' : 'Account'}
+      </button>
+
+      <div className="container">
         <h1>Student Jobs in Namur</h1>
-        <button className="auth-button" onClick={() => setShowAccountPanel(!showAccountPanel)}>
-          {showAccountPanel ? 'Close' : 'Account'}
-        </button>
-      </div>
+        <p>Welcome to our job platform!</p>
 
-      <p>Welcome to our job platform!</p>
+        <div style={{ display: 'flex', alignItems: 'flex-start', gap: '2rem' }}>
+          {/* Job list */}
+          <div style={{ flex: 1 }}>
+            {jobs.length === 0 ? (
+              <p>No jobs available.</p>
+            ) : (
+              jobs.map((job, index) => (
+                <Job key={index} data={job} />
+              ))
+            )}
+          </div>
 
-      <div style={{ display: 'flex', alignItems: 'flex-start', gap: '2rem' }}>
-        {/* Job list */}
-        <div style={{ flex: 1 }}>
-          {jobs.length === 0 ? (
-            <p>No jobs available.</p>
-          ) : (
-            jobs.map((job, index) => (
-              <Job key={index} data={job} />
-            ))
+          {/* Auth panel */}
+          {showAccountPanel && (
+            <AuthPanel
+              onLogin={handleLogin}
+              username={loggedInUser}
+              onAddJob={(job) => setJobs((prev) => [...prev, job])}
+            />
           )}
         </div>
-
-        {/* Account panel */}
-        {showAccountPanel && (
-          <AuthPanel
-            onLogin={handleLogin}
-            username={loggedInUser}
-            onAddJob={(job) => setJobs((prev) => [...prev, job])}
-          />
-        )}
       </div>
-    </div>
+    </>
   );
 }
 
