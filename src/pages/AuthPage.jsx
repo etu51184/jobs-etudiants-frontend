@@ -12,8 +12,8 @@ function AuthPage() {
     e.preventDefault();
 
     const url = isLoginMode
-      ? 'https://jobs-etudiants-backend.onrender.com/api/login'
-      : 'https://jobs-etudiants-backend.onrender.com/api/users';
+      ? `${import.meta.env.VITE_API_URL}/api/login`
+      : `${import.meta.env.VITE_API_URL}/api/users`;
 
     fetch(url, {
       method: 'POST',

@@ -1,4 +1,3 @@
-// src/components/AddJobForm/AddJobForm.jsx
 import { useState } from 'react';
 import './AddJobForm.css';
 import '../../App.css';
@@ -67,7 +66,7 @@ function AddJobForm({ onAdd }) {
       createdBy: username
     };
 
-    fetch('https://jobs-etudiants-backend.onrender.com/api/jobs', {
+    fetch(`${import.meta.env.VITE_API_URL}/api/jobs`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(newJob)
