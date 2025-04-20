@@ -1,7 +1,7 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Home from "./pages/Home";
 import AuthPage from "./pages/AuthPage";
-import AddJobForm from "./pages/AddJobForm";
+import AddJobForm from './components/AddJobForm/AddJobForm';
 import AdminUsersPage from "./pages/AdminUsersPage";
 import Layout from "./components/Layout";
 
