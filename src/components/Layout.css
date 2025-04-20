@@ -1,18 +1,48 @@
-.logout-btn {
-  background-color: #f44336;
+/* src/components/Layout.css */
+
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background-color: #f4f4f4;
+}
+
+.container {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 20px;
+  background-color: #ffffff;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+}
+
+header {
+  background-color: #007bff;
+  padding: 20px;
+  text-align: center;
   color: white;
-  border: none;
-  padding: 6px 12px;
-  cursor: pointer;
-  margin-left: 10px;
-  border-radius: 4px;
-}
-
-.logout-btn:hover {
-  background-color: #d32f2f;
-}
-
-.username {
-  margin-right: 10px;
+  border-radius: 8px 8px 0 0;
+  font-size: 24px;
   font-weight: bold;
+}
+
+nav {
+  margin-top: 10px;
+  display: flex;
+  gap: 20px;
+  justify-content: center;
+  padding-bottom: 15px;
+}
+
+nav a {
+  text-decoration: none;
+  color: #333;
+  font-weight: bold;
+}
+
+nav a:hover {
+  color: #007bff;
+}
+
+main {
+  padding: 20px;
 }

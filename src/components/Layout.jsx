@@ -1,44 +1,37 @@
-import { Outlet, Link, useNavigate } from "react-router-dom";
-import "./Layout.css";
-import { useAuth } from "../contexts/AuthContext";
+import { Link, Outlet, useNavigate } from "react-router-dom";
+import { useContext } from "react";
+import { AuthContext } from "../AuthContext";
+import "./Layout.css"; // Assure-toi que ce chemin est bon
 
 const Layout = () => {
+  const { user, logout } = useContext(AuthContext);
   const navigate = useNavigate();
-  const { username, logout } = useAuth();
 
   const handleLogout = () => {
-    if (logout) {
-      logout();
-      navigate("/auth");
-    }
+    logout();
+    navigate("/");
   };
 
   return (
-    <>
-      <header>
-        <nav className="navbar">
-          <div className="navbar-logo">
-            <Link to="/">Jobs Étudiants</Link>
-          </div>
-          <div className="navbar-links">
-            <Link to="/">Accueil</Link>
-            <Link to="/post">Publier une annonce</Link>
-            {!username && <Link to="/auth">Connexion</Link>}
-            {username && (
-              <>
-                <span className="username">Bienvenue, {username}</span>
-                <button className="logout-btn" onClick={handleLogout}>
-                  Se déconnecter
-                </button>
-              </>
-            )}
-          </div>
-        </nav>
-      </header>
+    <div className="container">
+      <header>Student Jobs</header>
+      <nav>
+        <Link to="/">Home</Link>
+        <Link to="/add-job">Post Job</Link>
+        {!user && <Link to="/auth">Login</Link>}
+        {user && user.username === "admin" && (
+          <Link to="/admin/users">Admin</Link>
+        )}
+        {user && (
+          <button onClick={handleLogout} style={{ border: "none", background: "none", color: "#007bff", cursor: "pointer" }}>
+            Logout
+          </button>
+        )}
+      </nav>
       <main>
         <Outlet />
       </main>
-    </>
+    </div>
   );
 };
 
