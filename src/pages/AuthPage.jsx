@@ -31,7 +31,7 @@ function AuthPage() {
         setMessage(data.message || t('serverError'));
         return;
       }
-      login(data.email, data.role);
+      login(data.email, data.role, data.token);
       navigate('/');
     } catch {
       setMessage(t('errorOccurred'));
