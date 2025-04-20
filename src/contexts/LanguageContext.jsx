@@ -52,6 +52,14 @@ const translations = {
     serverError: "Server error",
     errorOccurred: "An error occurred.",
     confirmPost: "Are you sure you want to post this job?",
+    // Weekday translations
+    monday: "Monday",
+    tuesday: "Tuesday",
+    wednesday: "Wednesday",
+    thursday: "Thursday",
+    friday: "Friday",
+    saturday: "Saturday",
+    sunday: "Sunday",
     // Contract types
     studentJob: "Student Job",
     internship: "Internship",
@@ -109,6 +117,14 @@ const translations = {
     serverError: "Erreur serveur",
     errorOccurred: "Une erreur s'est produite.",
     confirmPost: "Êtes-vous sûr de vouloir publier cette annonce ?",
+    // Weekday translations
+    monday: "Lundi",
+    tuesday: "Mardi",
+    wednesday: "Mercredi",
+    thursday: "Jeudi",
+    friday: "Vendredi",
+    saturday: "Samedi",
+    sunday: "Dimanche",
     // Contract types
     studentJob: "Job étudiant",
     internship: "Stage",
