@@ -2,7 +2,7 @@
 function JobPreview({
   title,
   location,
-  contractType,
+  contract_type,
   salary,
   contact,
   description,
@@ -16,8 +16,8 @@ function JobPreview({
   return (
     <div className="job-card">
       <h2>{title}</h2>
-      <p><strong>Lieu :</strong> {location}</p>
-      <p><strong>Type :</strong> {contractType}</p>
+      <p><strong>{t('location')}:</strong> {location}</p>
+      <p><strong>{t('type')}:</strong> {contract_type}</p>
       {salary && <p><strong>Rémunération :</strong> {salary}</p>}
       {schedule && <p><strong>Horaires :</strong> {schedule}</p>}
       {days?.length > 0 && <p><strong>Jours :</strong> {days.join(', ')}</p>}

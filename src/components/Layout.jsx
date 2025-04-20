@@ -1,10 +1,12 @@
 import { Link, Outlet, useNavigate } from "react-router-dom";
-import { useAuth } from "../contexts/AuthContext"; // 👈 on importe le hook
-
+import { useAuth } from "../contexts/AuthContext";
+import { useLang } from "../contexts/LanguageContext.jsx";
+import LanguageSwitcher from "./LanguageSwitcher.jsx";
 import "./Layout.css";
 
 const Layout = () => {
-  const { user, logout } = useAuth(); // 👈 on utilise le hook
+  const { user, logout } = useAuth();
+  const { t } = useLang();
   const navigate = useNavigate();
 
   const handleLogout = () => {
@@ -14,20 +16,21 @@ const Layout = () => {
 
   return (
     <div className="container">
-      <header>Student Jobs</header>
+      <header>{t('welcome')}</header>
       <nav>
-        <Link to="/">Home</Link>
-        <Link to="/add-job">Post Job</Link>
-        {!user && <Link to="/login">Login</Link>}
-        {user && user.role === "admin" && <Link to="/admin/users">Admin</Link>}
+        <Link to="/">{t("home")}</Link>
+        <Link to="/add-job">{t("postJob")}</Link>
+        {!user && <Link to="/login">{t("login")}</Link>}
+        {user && user.role === "admin" && <Link to="/admin/users">{t("userList")}</Link>}
         {user && (
           <button
             onClick={handleLogout}
-            style={{ border: "none", background: "none", color: "#007bff", cursor: "pointer" }}
+            style={{ border: "none", background: "none", color: "#00cc66", cursor: "pointer" }}
           >
-            Logout
+            {t("logout")}
           </button>
         )}
+        <LanguageSwitcher />
       </nav>
       <main>
         <Outlet />

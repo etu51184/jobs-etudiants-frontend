@@ -1,16 +1,20 @@
 // src/components/AddJobForm/StageFields.jsx
+import { useLang } from '../../contexts/LanguageContext.jsx';
 function StageFields({ duration, setDuration, schedule, setSchedule }) {
+    const { t } = useLang();
+
+
   return (
     <>
       <input
         type="text"
-        placeholder="Durée du stage (ex: 2 mois)"
+        placeholder={t('durationPlaceholder')}
         value={duration}
         onChange={(e) => setDuration(e.target.value)}
       />
       <input
         type="text"
-        placeholder="Horaires (ex: 9h-17h)"
+        placeholder={t('schedulePlaceholder')}
         value={schedule}
         onChange={(e) => setSchedule(e.target.value)}
       />

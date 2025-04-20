@@ -1,19 +1,20 @@
-// src/pages/PostJobPage.jsx
-
-import AddJobForm from '../components/AddJobForm/AddJobForm';
+import React from 'react';
+import AddJobForm from '../components/AddJobForm/AddJobForm.jsx';
+import { useAuth } from '../contexts/AuthContext.jsx';
+import { useLang } from '../contexts/LanguageContext.jsx';
 import '../App.css';
-import { useAuth } from '../contexts/AuthContext';
 
 function PostJobPage() {
   const { user } = useAuth();
+  const { t } = useLang();
 
   return (
     <div className="container">
-      <h2>Publier une nouvelle annonce</h2>
+      <h2>{t('postJob')}</h2>
       {user ? (
-        <AddJobForm onAdd={() => alert('Annonce publiée avec succès !')} />
+        <AddJobForm onAdd={() => alert(t('jobPosted'))} />
       ) : (
-        <p>Vous devez être connecté pour poster un job.</p>
+        <p>{t('mustLogin')}</p>
       )}
     </div>
   );

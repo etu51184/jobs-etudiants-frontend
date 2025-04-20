@@ -1,18 +1,20 @@
-// src/components/AddJobForm/AddJobForm.jsx
-
-import { useState } from 'react';
+import React, { useState } from 'react';
+import { useAuth } from '../../contexts/AuthContext.jsx';
+import { useLang } from '../../contexts/LanguageContext.jsx';
+import ContractSelector from './ContractSelector.jsx';
+import StudentJobFields from './StudentJobFields.jsx';
+import StageFields from './StageFields.jsx';
+import CddFields from './CddFields.jsx';
+import VolunteerFields from './VolunteerFields.jsx';
+import JobPreview from './JobPreview.jsx';
 import './AddJobForm.css';
-import { useAuth } from '../../contexts/AuthContext';
-import ContractSelector from './ContractSelector';
-import StudentJobFields from './StudentJobFields';
-import StageFields from './StageFields';
-import CddFields from './CddFields';
-import VolunteerFields from './VolunteerFields';
-import JobPreview from './JobPreview';
 
 function AddJobForm({ onAdd }) {
   const { user } = useAuth();
-  const [contractType, setContractType] = useState('Job étudiant');
+  const { t } = useLang();
+
+  // contractType keys: studentJob, internship, contract, volunteer
+  const [contractType, setContractType] = useState('studentJob');
   const [title, setTitle] = useState('');
   const [location, setLocation] = useState('');
   const [salary, setSalary] = useState('');
@@ -29,36 +31,43 @@ function AddJobForm({ onAdd }) {
   const [error, setError] = useState('');
 
   const clearForm = () => {
-    setTitle(''); setLocation(''); setSalary('');
-    setDescription(''); setContact(''); setDays([]);
-    setSchedule(''); setDuration(''); setStartDate('');
-    setEndDate(''); setFullTime(false);
+    setTitle('');
+    setLocation('');
+    setSalary('');
+    setDescription('');
+    setContact('');
+    setDays([]);
+    setSchedule('');
+    setDuration('');
+    setStartDate('');
+    setEndDate('');
+    setFullTime(false);
     setExpiresInDays(30);
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!user) {
-      setError('Vous devez être connecté pour poster un job.');
+      setError(t('mustLogin') || 'You must be logged in to post a job.');
       return;
     }
-    if (!window.confirm("Êtes-vous sûr de vouloir publier cette annonce ?")) return;
+    if (!window.confirm(t('confirmPost') || 'Are you sure you want to post this job?')) return;
 
     const newJob = {
       title,
       description,
-      contractType,
+      contract_type: contractType,
       location,
       schedule,
       days,
       salary,
       contact,
       duration,
-      startDate,
-      endDate,
-      fullTime,
-      expiresInDays,
-      email: user.email      // ← vient du contexte
+      start_date: startDate,
+      end_date: endDate,
+      full_time: fullTime,
+      expires_in_days: expiresInDays,
+      email: user.email
     };
 
     try {
@@ -67,86 +76,90 @@ function AddJobForm({ onAdd }) {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(newJob)
       });
-      if (!res.ok) throw new Error('Erreur réseau');
+      if (!res.ok) throw new Error('Network error');
       const data = await res.json();
       onAdd?.(data);
-      setMessage('Annonce publiée avec succès !');
+      setMessage(t('jobPosted') || 'Job posted successfully!');
       setError('');
       clearForm();
     } catch {
-      setError('Erreur lors de la publication du job.');
+      setError(t('postError') || 'Error posting job.');
       setMessage('');
     }
   };
 
   return (
-    <>
-      <form onSubmit={handleSubmit} className="job-form">
-        <h2>Publier une annonce</h2>
-        <ContractSelector contractType={contractType} setContractType={setContractType} />
+    <form onSubmit={handleSubmit} className="job-form">
+      <h2>{t('postJob')}</h2>
 
-        <input type="text" placeholder="Titre du job" value={title}
-               onChange={e => setTitle(e.target.value)} required />
-        <input type="text" placeholder="Lieu" value={location}
-               onChange={e => setLocation(e.target.value)} required />
-        <input type="text" placeholder="Description du poste" value={description}
-               onChange={e => setDescription(e.target.value)} required />
-        <input type="text" placeholder="Contact" value={contact}
-               onChange={e => setContact(e.target.value)} required />
+      <ContractSelector contractType={contractType} setContractType={setContractType} />
 
-        {contractType === 'Job étudiant' && (
-          <StudentJobFields
-            days={days} setDays={setDays}
-            schedule={schedule} setSchedule={setSchedule}
-            salary={salary} setSalary={setSalary}
-          />
-        )}
-        {contractType === 'Stage' && (
-          <StageFields
-            duration={duration} setDuration={setDuration}
-            schedule={schedule} setSchedule={setSchedule}
-          />
-        )}
-        {contractType === 'CDD' && (
-          <CddFields
-            startDate={startDate} setStartDate={setStartDate}
-            endDate={endDate} setEndDate={setEndDate}
-            fullTime={fullTime} setFullTime={setFullTime}
-          />
-        )}
-        {contractType === 'Bénévolat' && (
-          <VolunteerFields
-            schedule={schedule} setSchedule={setSchedule}
-          />
-        )}
+      <input
+        type="text"
+        placeholder={t('jobTitle')}
+        value={title}
+        onChange={(e) => setTitle(e.target.value)}
+        required
+      />
+      <input
+        type="text"
+        placeholder={t('location')}
+        value={location}
+        onChange={(e) => setLocation(e.target.value)}
+        required
+      />
+      <textarea
+        placeholder={t('description')}
+        value={description}
+        onChange={(e) => setDescription(e.target.value)}
+        required
+      />
+      <input
+        type="text"
+        placeholder={t('contact')}
+        value={contact}
+        onChange={(e) => setContact(e.target.value)}
+        required
+      />
 
-        <input type="number" min="1" max="30"
-               placeholder="Durée de publication (en jours)"
-               value={expiresInDays}
-               onChange={e => setExpiresInDays(e.target.value)} required />
-
-        <button type="submit">Ajouter l’annonce</button>
-        {message && <p className="auth-message">{message}</p>}
-        {error && <p style={{ color: 'red', marginTop: '1rem' }}>{error}</p>}
-      </form>
-
-      {(title || location || description) && (
-        <JobPreview
-          title={title}
-          location={location}
-          contractType={contractType}
-          salary={salary}
-          contact={contact}
-          description={description}
-          days={days}
-          schedule={schedule}
-          duration={duration}
-          startDate={startDate}
-          endDate={endDate}
-          fullTime={fullTime}
+      {contractType === 'studentJob' && (
+        <StudentJobFields
+          days={days} setDays={setDays}
+          schedule={schedule} setSchedule={setSchedule}
+          salary={salary} setSalary={setSalary}
         />
       )}
-    </>
+      {contractType === 'internship' && (
+        <StageFields
+          duration={duration} setDuration={setDuration}
+          schedule={schedule} setSchedule={setSchedule}
+        />
+      )}
+      {contractType === 'contract' && (
+        <CddFields
+          startDate={startDate} setStartDate={setStartDate}
+          endDate={endDate} setEndDate={setEndDate}
+          fullTime={fullTime} setFullTime={setFullTime}
+        />
+      )}
+      {contractType === 'volunteer' && (
+        <VolunteerFields schedule={schedule} setSchedule={setSchedule} />
+      )}
+
+      <input
+        type="number"
+        min="1"
+        max="30"
+        placeholder={t('expiresInDays')}
+        value={expiresInDays}
+        onChange={(e) => setExpiresInDays(Number(e.target.value))}
+        required
+      />
+
+      <button type="submit">{t('submitJob')}</button>
+      {message && <p className="auth-message">{message}</p>}
+      {error && <p style={{ color: 'red', marginTop: '1rem' }}>{error}</p>}
+    </form>
   );
 }
 

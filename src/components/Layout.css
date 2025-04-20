@@ -1,53 +1,67 @@
 /* Layout.css */
 
-body {
-  margin: 0;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  background-color: #121212;
-  color: #eaeaea;
-}
-
+/* Reset specific to layout */
 header {
   background-color: #1e1e1e;
-  color: white;
+  color: #ffffff;
   padding: 1.5rem 2rem;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
-}
-
-nav {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  max-width: 1024px;
-  margin: 0 auto;
+}
+
+/* Navigation bar */
+nav {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
 }
 
 nav a {
   color: #f1f1f1;
   text-decoration: none;
-  margin: 0 1rem;
+  margin-right: 1rem;
+  font-weight: 500;
   transition: color 0.3s ease;
 }
 
 nav a:hover {
   color: #00cc66;
+  text-decoration: underline;
 }
 
-button {
+/* Logout and language switcher buttons styled like links */
+nav button,
+nav .lang-switcher {
   background: none;
   border: none;
   color: #00cc66;
   cursor: pointer;
-  font-size: 1rem;
+  font-size: 0.9rem;
   padding: 0;
+  transition: text-decoration 0.3s ease;
 }
 
-button:hover {
+nav button:hover,
+nav .lang-switcher:hover {
   text-decoration: underline;
 }
 
+/* Main and container adjustments */
+.container {
+  padding-top: 2rem;
+}
+
 main {
-  max-width: 1024px;
-  margin: 2rem auto;
+  padding: 1rem 2rem;
+}
+
+footer {
+  background-color: #1e1e1e;
+  color: #888;
+  text-align: center;
   padding: 1rem;
+  margin-top: 2rem;
+  font-size: 0.9rem;
 }
