@@ -1,16 +1,19 @@
+// src/pages/PostJobPage.jsx
+
 import AddJobForm from '../components/AddJobForm/AddJobForm';
 import '../App.css';
+import { useAuth } from '../contexts/AuthContext';
 
 function PostJobPage() {
-  const email = localStorage.getItem('email');
+  const { user } = useAuth();
 
   return (
     <div className="container">
-      <h2>Post a New Job</h2>
-      {email ? (
-        <AddJobForm onAdd={() => alert('Job posted successfully!')} />
+      <h2>Publier une nouvelle annonce</h2>
+      {user ? (
+        <AddJobForm onAdd={() => alert('Annonce publiée avec succès !')} />
       ) : (
-        <p>You must be logged in to post a job.</p>
+        <p>Vous devez être connecté pour poster un job.</p>
       )}
     </div>
   );

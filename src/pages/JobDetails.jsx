@@ -1,13 +1,16 @@
+// src/pages/JobDetails.jsx
+
 import { useParams, useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
+import { useAuth } from '../contexts/AuthContext';
 import '../App.css';
 
 function JobDetails() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { user } = useAuth();
   const [job, setJob] = useState(null);
   const [error, setError] = useState('');
-  const email = localStorage.getItem('email');
 
   useEffect(() => {
     fetch(`${import.meta.env.VITE_API_URL}/api/jobs/${id}`)
@@ -15,38 +18,39 @@ function JobDetails() {
         if (!res.ok) throw new Error('Annonce introuvable');
         return res.json();
       })
-      .then(data => setJob(data))
+      .then(setJob)
       .catch(err => setError(err.message));
   }, [id]);
 
-  const handleDelete = () => {
-    const confirm = window.confirm('Supprimer cette annonce ?');
-    if (!confirm) return;
+  const handleDelete = async () => {
+    if (!user) return alert('Vous devez être connecté pour supprimer.');
+    if (!window.confirm('Supprimer cette annonce ?')) return;
 
-    fetch(`${import.meta.env.VITE_API_URL}/api/jobs/${id}`, {
-      method: 'DELETE',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email })
-    })
-      .then(res => res.json())
-      .then(() => {
-        alert('Annonce supprimée');
-        navigate('/');
-      })
-      .catch(() => {
-        alert('Erreur lors de la suppression');
+    try {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/jobs/${id}`, {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: user.email })
       });
+      const data = await res.json();
+      if (data.error) throw new Error(data.error);
+      alert('Annonce supprimée');
+      navigate('/');
+    } catch {
+      alert('Erreur lors de la suppression');
+    }
   };
 
-  const goBack = () => navigate('/');
   if (error) return <div className="container"><p style={{ color: 'red' }}>{error}</p></div>;
   if (!job) return <div className="container"><p>Chargement...</p></div>;
 
-  const canDelete = email === job.created_by || email === 'admin@example.com';
+  const isOwner = user && job.created_by === user.email;
+  const isAdmin = user && user.role === 'admin';
+  const canDelete = isOwner || isAdmin;
 
   return (
     <div className="container">
-      <button onClick={goBack} style={{ marginBottom: '1.5rem' }}>
+      <button onClick={() => navigate('/')} style={{ marginBottom: '1.5rem' }}>
         ← Retour à la liste
       </button>
 
