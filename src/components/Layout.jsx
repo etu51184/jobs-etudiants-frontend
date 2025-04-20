@@ -1,7 +1,7 @@
 import { Link, Outlet, useNavigate } from "react-router-dom";
 import { useContext } from "react";
 import { AuthContext } from "../contexts/AuthContext";
-import "./Layout.css"; // Assure-toi que ce chemin est bon
+import "./Layout.css";
 
 const Layout = () => {
   const { user, logout } = useContext(AuthContext);
