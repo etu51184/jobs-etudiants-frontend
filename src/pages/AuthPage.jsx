@@ -1,12 +1,14 @@
 // src/pages/AuthPage.jsx
 import { useState } from 'react';
 import '../App.css';
+import { useAuth } from '../contexts/AuthContext';
 
 function AuthPage() {
   const [isLoginMode, setIsLoginMode] = useState(true);
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [message, setMessage] = useState('');
+  const { login } = useAuth();
 
   const handleAuth = (e) => {
     e.preventDefault();
@@ -26,33 +28,33 @@ function AuthPage() {
           setMessage(data.error);
         } else {
           setMessage(data.message || 'Success');
-          localStorage.setItem('username', username);
+          login(username); // mise à jour via le contexte
         }
       })
-      .catch(() => setMessage('Something went wrong.'));
+      .catch(() => setMessage('Une erreur s’est produite.'));
   };
 
   return (
     <div className="container">
-      <h2>{isLoginMode ? 'Login' : 'Create Account'}</h2>
+      <h2>{isLoginMode ? 'Connexion' : 'Créer un compte'}</h2>
       <form onSubmit={handleAuth}>
         <input
           type="text"
-          placeholder="Username"
+          placeholder="Nom d'utilisateur"
           value={username}
           onChange={(e) => setUsername(e.target.value)}
           required
         />
         <input
           type="password"
-          placeholder="Password"
+          placeholder="Mot de passe"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           required
         />
-        <button type="submit">{isLoginMode ? 'Login' : 'Sign up'}</button>
+        <button type="submit">{isLoginMode ? 'Connexion' : 'Créer un compte'}</button>
         <button type="button" onClick={() => setIsLoginMode(!isLoginMode)}>
-          {isLoginMode ? 'Create account' : 'Back to login'}
+          {isLoginMode ? 'Créer un compte' : 'Retour à la connexion'}
         </button>
       </form>
       {message && <p className="auth-message">{message}</p>}

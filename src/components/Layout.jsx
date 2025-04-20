@@ -1,40 +1,45 @@
-// src/components/Layout.jsx
-import { useState } from 'react';
-import { Link, Outlet } from 'react-router-dom';
-import '../App.css';
+import { Outlet, Link, useNavigate } from "react-router-dom";
+import "../styles/Layout.css";
+import { useAuth } from "../contexts/AuthContext";
 
-function Layout() {
-  const [menuOpen, setMenuOpen] = useState(false);
+const Layout = () => {
+  const navigate = useNavigate();
+  const { username, logout } = useAuth();
 
-  const toggleMenu = () => {
-    setMenuOpen(!menuOpen);
-  };
-
-  const closeMenu = () => {
-    setMenuOpen(false);
+  const handleLogout = () => {
+    if (logout) {
+      logout();
+      navigate("/auth");
+    }
   };
 
   return (
     <>
-      <header className="nav-bar">
-        <div className="logo">Student Jobs in Namur</div>
-        
-        <nav className={`nav-links ${menuOpen ? 'show' : ''}`}>
-          <Link to="/" onClick={closeMenu}>Home</Link>
-          <Link to="/auth" onClick={closeMenu}>Login / Sign up</Link>
-          <Link to="/post" onClick={closeMenu}>Post a Job</Link>
+      <header>
+        <nav className="navbar">
+          <div className="navbar-logo">
+            <Link to="/">Jobs Étudiants</Link>
+          </div>
+          <div className="navbar-links">
+            <Link to="/">Accueil</Link>
+            <Link to="/post">Publier une annonce</Link>
+            {!username && <Link to="/auth">Connexion</Link>}
+            {username && (
+              <>
+                <span className="username">Bienvenue, {username}</span>
+                <button className="logout-btn" onClick={handleLogout}>
+                  Se déconnecter
+                </button>
+              </>
+            )}
+          </div>
         </nav>
-
-        <button className="nav-toggle" onClick={toggleMenu} aria-label="Toggle navigation">
-          &#x2630;
-        </button>
       </header>
-
-      <main className="container">
+      <main>
         <Outlet />
       </main>
     </>
   );
-}
+};
 
 export default Layout;
