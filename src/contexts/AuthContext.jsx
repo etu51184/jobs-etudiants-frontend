@@ -1,25 +1,31 @@
-import { createContext, useContext, useState } from 'react';
+import React, { createContext, useContext, useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 
-export const AuthContext = createContext();
+// Création du contexte d'authentification
+const AuthContext = createContext(null);
 
-export function AuthProvider({ children }) {
-  const [username, setUsername] = useState(null);
+// Fournisseur d'authentification
+export const AuthProvider = ({ children }) => {
+  const [user, setUser] = useState(null);
+  const navigate = useNavigate();
 
-  const login = (newUsername) => {
-    setUsername(newUsername);
+  // Permet de se connecter en stockant l'email et le rôle
+  const login = (email, role = 'user') => {
+    setUser({ email, role });
   };
 
+  // Déconnexion
   const logout = () => {
-    setUsername(null);
+    setUser(null);
+    navigate('/login');
   };
 
   return (
-    <AuthContext.Provider value={{ username, login, logout }}>
+    <AuthContext.Provider value={{ user, login, logout }}>
       {children}
     </AuthContext.Provider>
   );
-}
+};
 
-export function useAuth() {
-  return useContext(AuthContext);
-}
+// Hook pour utiliser le contexte
+export const useAuth = () => useContext(AuthContext);
