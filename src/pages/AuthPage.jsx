@@ -1,4 +1,3 @@
-// src/pages/AuthPage.jsx
 import { useState } from 'react';
 import '../App.css';
 import { useAuth } from '../contexts/AuthContext';
@@ -6,6 +5,7 @@ import { useAuth } from '../contexts/AuthContext';
 function AuthPage() {
   const [isLoginMode, setIsLoginMode] = useState(true);
   const [username, setUsername] = useState('');
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [message, setMessage] = useState('');
   const { login } = useAuth();
@@ -15,20 +15,24 @@ function AuthPage() {
 
     const url = isLoginMode
       ? `${import.meta.env.VITE_API_URL}/api/users/login`
-      : `${import.meta.env.VITE_API_URL}/api/users`;
+      : `${import.meta.env.VITE_API_URL}/api/users/register`;
+
+    const body = isLoginMode
+      ? { email, password }
+      : { username, email, password };
 
     fetch(url, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ username, password })
+      body: JSON.stringify(body)
     })
       .then(res => res.json())
       .then(data => {
-        if (data.error) {
-          setMessage(data.error);
+        if (data.error || data.message) {
+          setMessage(data.error || data.message);
         } else {
-          setMessage(data.message || 'Success');
-          login(username); // mise à jour via le contexte
+          login(data.username);
+          setMessage("Connecté avec succès !");
         }
       })
       .catch(() => setMessage('Une erreur s’est produite.'));
@@ -38,13 +42,24 @@ function AuthPage() {
     <div className="container">
       <h2>{isLoginMode ? 'Connexion' : 'Créer un compte'}</h2>
       <form onSubmit={handleAuth}>
+        {!isLoginMode && (
+          <input
+            type="text"
+            placeholder="Nom d'utilisateur"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+            required
+          />
+        )}
+
         <input
-          type="text"
-          placeholder="Nom d'utilisateur"
-          value={username}
-          onChange={(e) => setUsername(e.target.value)}
+          type="email"
+          placeholder="Adresse email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
           required
         />
+
         <input
           type="password"
           placeholder="Mot de passe"
@@ -52,7 +67,11 @@ function AuthPage() {
           onChange={(e) => setPassword(e.target.value)}
           required
         />
-        <button type="submit">{isLoginMode ? 'Connexion' : 'Créer un compte'}</button>
+
+        <button type="submit">
+          {isLoginMode ? 'Connexion' : 'Créer un compte'}
+        </button>
+
         <button type="button" onClick={() => setIsLoginMode(!isLoginMode)}>
           {isLoginMode ? 'Créer un compte' : 'Retour à la connexion'}
         </button>
