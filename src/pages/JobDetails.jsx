@@ -7,7 +7,7 @@ function JobDetails() {
   const navigate = useNavigate();
   const [job, setJob] = useState(null);
   const [error, setError] = useState('');
-  const username = localStorage.getItem('username');
+  const email = localStorage.getItem('email');
 
   useEffect(() => {
     fetch(`${import.meta.env.VITE_API_URL}/api/jobs/${id}`)
@@ -26,7 +26,7 @@ function JobDetails() {
     fetch(`${import.meta.env.VITE_API_URL}/api/jobs/${id}`, {
       method: 'DELETE',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ username })
+      body: JSON.stringify({ email })
     })
       .then(res => res.json())
       .then(() => {
@@ -42,7 +42,7 @@ function JobDetails() {
   if (error) return <div className="container"><p style={{ color: 'red' }}>{error}</p></div>;
   if (!job) return <div className="container"><p>Chargement...</p></div>;
 
-  const canDelete = username === job.created_by || username === 'Florian';
+  const canDelete = email === job.created_by || email === 'admin@example.com';
 
   return (
     <div className="container">

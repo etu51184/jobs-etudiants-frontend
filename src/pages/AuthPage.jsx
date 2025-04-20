@@ -4,7 +4,6 @@ import { useAuth } from '../contexts/AuthContext';
 
 function AuthPage() {
   const [isLoginMode, setIsLoginMode] = useState(true);
-  const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [message, setMessage] = useState('');
@@ -17,9 +16,7 @@ function AuthPage() {
       ? `${import.meta.env.VITE_API_URL}/api/users/login`
       : `${import.meta.env.VITE_API_URL}/api/users/register`;
 
-    const body = isLoginMode
-      ? { email, password }
-      : { username, email, password };
+    const body = { email, password };
 
     fetch(url, {
       method: 'POST',
@@ -31,7 +28,7 @@ function AuthPage() {
         if (data.error || data.message) {
           setMessage(data.error || data.message);
         } else {
-          login(data.username);
+          login(data.email);
           setMessage("Connecté avec succès !");
         }
       })
@@ -42,16 +39,6 @@ function AuthPage() {
     <div className="container">
       <h2>{isLoginMode ? 'Connexion' : 'Créer un compte'}</h2>
       <form onSubmit={handleAuth}>
-        {!isLoginMode && (
-          <input
-            type="text"
-            placeholder="Nom d'utilisateur"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-            required
-          />
-        )}
-
         <input
           type="email"
           placeholder="Adresse email"

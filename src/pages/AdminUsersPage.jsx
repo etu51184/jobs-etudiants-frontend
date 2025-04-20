@@ -29,7 +29,7 @@ const AdminUsersPage = () => {
       <ul>
         {users.map(user => (
           <li key={user.id}>
-            {user.username} ({user.email})
+            {user.email}
             <button onClick={() => handleDelete(user.id)}>🗑 Supprimer</button>
           </li>
         ))}

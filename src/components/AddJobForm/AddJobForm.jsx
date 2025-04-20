@@ -27,48 +27,38 @@ function AddJobForm({ onAdd }) {
   const [error, setError] = useState('');
 
   const clearForm = () => {
-    setTitle('');
-    setLocation('');
-    setSalary('');
-    setDescription('');
-    setContact('');
-    setDays([]);
-    setSchedule('');
-    setDuration('');
-    setStartDate('');
-    setEndDate('');
-    setFullTime(false);
+    setTitle(''); setLocation(''); setSalary('');
+    setDescription(''); setContact(''); setDays([]);
+    setSchedule(''); setDuration(''); setStartDate('');
+    setEndDate(''); setFullTime(false);
     setExpiresInDays(30);
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    if (!window.confirm("Êtes-vous sûr de vouloir publier cette annonce ?")) return;
 
-    const confirmed = window.confirm("Êtes-vous sûr de vouloir publier cette annonce ?");
-    if (!confirmed) return;
-
-    const username = localStorage.getItem('username');
-
-    if (!contractType) {
-      setError("Veuillez sélectionner un type de contrat.");
+    const email = localStorage.getItem('email');
+    if (!email) {
+      setError('Vous devez être connecté pour poster un job.');
       return;
     }
 
     const newJob = {
       title,
-      location,
+      description,
       contractType,
+      location,
+      schedule,
+      days,
       salary,
       contact,
-      description,
-      days,
-      schedule,
       duration,
       startDate,
       endDate,
       fullTime,
       expiresInDays,
-      createdBy: username
+      email   // utiliser le champ email
     };
 
     fetch(`${import.meta.env.VITE_API_URL}/api/jobs`, {
@@ -82,9 +72,8 @@ function AddJobForm({ onAdd }) {
       })
       .then(data => {
         onAdd?.(data);
-        setMessage('Job publié avec succès !');
-        setError('');
-        clearForm();
+        setMessage('Job publié avec succès !');
+        setError(''); clearForm();
       })
       .catch(() => {
         setError('Erreur lors de la publication du job.');
@@ -98,38 +87,19 @@ function AddJobForm({ onAdd }) {
         <h2>Publier une annonce</h2>
 
         <ContractSelector contractType={contractType} setContractType={setContractType} />
-
-        <input type="text" placeholder="Titre du job" value={title} onChange={(e) => setTitle(e.target.value)} required />
-        <input type="text" placeholder="Lieu" value={location} onChange={(e) => setLocation(e.target.value)} required />
-        <input type="text" placeholder="Description du poste" value={description} onChange={(e) => setDescription(e.target.value)} required />
-        <input type="text" placeholder="Contact" value={contact} onChange={(e) => setContact(e.target.value)} required />
+        <input type="text" placeholder="Titre du job" value={title} onChange={e => setTitle(e.target.value)} required />
+        <input type="text" placeholder="Lieu" value={location} onChange={e => setLocation(e.target.value)} required />
+        <input type="text" placeholder="Description du poste" value={description} onChange={e => setDescription(e.target.value)} required />
+        <input type="text" placeholder="Contact" value={contact} onChange={e => setContact(e.target.value)} required />
 
         {contractType === 'Job étudiant' && (
-          <StudentJobFields days={days} setDays={setDays} schedule={schedule} setSchedule={setSchedule} salary={salary} setSalary={setSalary} />
+          <StudentJobFields days={days} setDays={setDays} schedule={schedule} setSchedule={setSchedule} salary={salary} setSalary={setSalary}/>
         )}
+        {contractType === 'Stage'     && <StageFields duration={duration} setDuration={setDuration} schedule={schedule} setSchedule={setSchedule}/>}        
+        {contractType === 'CDD'       && <CddFields startDate={startDate} setStartDate={setStartDate} endDate={endDate} setEndDate={setEndDate} fullTime={fullTime} setFullTime={setFullTime}/>}        
+        {contractType === 'Bénévolat'&& <VolunteerFields schedule={schedule} setSchedule={setSchedule}/>}        
 
-        {contractType === 'Stage' && (
-          <StageFields duration={duration} setDuration={setDuration} schedule={schedule} setSchedule={setSchedule} />
-        )}
-
-        {contractType === 'CDD' && (
-          <CddFields startDate={startDate} setStartDate={setStartDate} endDate={endDate} setEndDate={setEndDate} fullTime={fullTime} setFullTime={setFullTime} />
-        )}
-
-        {contractType === 'Bénévolat' && (
-          <VolunteerFields schedule={schedule} setSchedule={setSchedule} />
-        )}
-
-        <input
-          type="number"
-          min="1"
-          max="30"
-          placeholder="Durée de publication (en jours)"
-          value={expiresInDays}
-          onChange={(e) => setExpiresInDays(e.target.value)}
-          required
-        />
-
+        <input type="number" min="1" max="30" placeholder="Durée de publication (en jours)" value={expiresInDays} onChange={e => setExpiresInDays(e.target.value)} required />
         <button type="submit">Ajouter l’annonce</button>
 
         {message && <p className="auth-message">{message}</p>}
