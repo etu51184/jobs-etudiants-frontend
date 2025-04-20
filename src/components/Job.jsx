@@ -9,9 +9,9 @@ function Job({ data }) {
     <div className="job-card" onClick={handleClick} style={{ cursor: 'pointer' }}>
       <h2>{data.title}</h2>
       <p><strong>Lieu :</strong> {data.location}</p>
-      <p><strong>Type :</strong> {data.contractType}</p>
+      <p><strong>Type :</strong> {data.contract_type}</p>
 
-      {data.contractType === 'Job étudiant' && (
+      {data.contract_type === 'Job étudiant' && (
         <>
           {data.schedule && <p><strong>Horaires :</strong> {data.schedule}</p>}
           {data.days?.length > 0 && <p><strong>Jours :</strong> {data.days.join(', ')}</p>}
@@ -19,7 +19,7 @@ function Job({ data }) {
         </>
       )}
 
-      {data.contractType === 'Stage' && (
+      {data.contract_type === 'Stage' && (
         <>
           {data.duration && <p><strong>Durée :</strong> {data.duration}</p>}
           {data.schedule && <p><strong>Horaires :</strong> {data.schedule}</p>}
@@ -27,15 +27,15 @@ function Job({ data }) {
         </>
       )}
 
-      {data.contractType === 'CDD' && (
+      {data.contract_type === 'CDD' && (
         <>
-          {data.startDate && <p><strong>Début :</strong> {data.startDate}</p>}
-          {data.endDate && <p><strong>Fin :</strong> {data.endDate}</p>}
-          <p><strong>Temps plein :</strong> {data.fullTime ? 'Oui' : 'Non'}</p>
+          {data.start_date && <p><strong>Début :</strong> {data.start_date}</p>}
+          {data.end_date && <p><strong>Fin :</strong> {data.end_date}</p>}
+          <p><strong>Temps plein :</strong> {data.full_time ? 'Oui' : 'Non'}</p>
         </>
       )}
 
-      {data.contractType === 'Bénévolat' && (
+      {data.contract_type === 'Bénévolat' && (
         <>
           {data.contact && <p><strong>Contact :</strong> {data.contact}</p>}
           {data.schedule && <p><strong>Disponibilités :</strong> {data.schedule}</p>}
