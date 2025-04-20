@@ -12,7 +12,7 @@ function AuthPage() {
     e.preventDefault();
 
     const url = isLoginMode
-      ? `${import.meta.env.VITE_API_URL}/api/login`
+      ? `${import.meta.env.VITE_API_URL}/api/users/login`
       : `${import.meta.env.VITE_API_URL}/api/users`;
 
     fetch(url, {
