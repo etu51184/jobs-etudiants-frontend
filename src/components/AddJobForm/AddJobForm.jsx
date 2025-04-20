@@ -49,6 +49,11 @@ function AddJobForm({ onAdd }) {
 
     const username = localStorage.getItem('username');
 
+    if (!contractType) {
+      setError("Veuillez sélectionner un type de contrat.");
+      return;
+    }
+
     const newJob = {
       title,
       location,
@@ -71,7 +76,10 @@ function AddJobForm({ onAdd }) {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(newJob)
     })
-      .then(res => res.json())
+      .then(res => {
+        if (!res.ok) throw new Error('Erreur réseau');
+        return res.json();
+      })
       .then(data => {
         onAdd?.(data);
         setMessage('Job publié avec succès !');
@@ -112,7 +120,15 @@ function AddJobForm({ onAdd }) {
           <VolunteerFields schedule={schedule} setSchedule={setSchedule} />
         )}
 
-        <input type="number" min="1" max="30" placeholder="Durée de publication (en jours)" value={expiresInDays} onChange={(e) => setExpiresInDays(e.target.value)} required />
+        <input
+          type="number"
+          min="1"
+          max="30"
+          placeholder="Durée de publication (en jours)"
+          value={expiresInDays}
+          onChange={(e) => setExpiresInDays(e.target.value)}
+          required
+        />
 
         <button type="submit">Ajouter l’annonce</button>
 
