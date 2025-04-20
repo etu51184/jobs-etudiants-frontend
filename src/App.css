@@ -61,3 +61,26 @@ button {
 button:hover {
   background-color: #00b359;
 }
+/* Barre de recherche & filtres */
+.filter-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+  justify-content: center;
+}
+
+.filter-input,
+.filter-select {
+  padding: 0.5rem 0.75rem;
+  border-radius: 6px;
+  border: 1px solid #444;
+  background-color: #2b2b2b;
+  color: #eaeaea;
+  flex: 1;
+  min-width: 160px;
+}
+
+.filter-select {
+  flex: 0 0 auto;
+}

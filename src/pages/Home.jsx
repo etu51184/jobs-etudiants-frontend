@@ -1,3 +1,4 @@
+// src/pages/Home.jsx
 import React, { useEffect, useState } from 'react';
 import Job from '../components/Job.jsx';
 import { useLang } from '../contexts/LanguageContext.jsx';
@@ -6,11 +7,11 @@ import '../App.css';
 
 function Home() {
   const { t } = useLang();
-  const { user } = useAuth();
+  const { user, token } = useAuth();
   const [jobs, setJobs] = useState([]);
   const [error, setError] = useState('');
 
-  // Search & filter state
+  // États recherche & filtres
   const [searchTerm, setSearchTerm] = useState('');
   const [filterType, setFilterType] = useState('all');
   const [filterLocation, setFilterLocation] = useState('');
@@ -21,16 +22,33 @@ function Home() {
         if (!res.ok) throw new Error(t('errorLoadingJobs'));
         return res.json();
       })
-      .then(data => setJobs(data))
+      .then(setJobs)
       .catch(err => setError(err.message));
   }, [t]);
 
-  // Filter and search logic
-  const filteredJobs = jobs.filter(job => {
+  const deleteJob = async (id) => {
+    const res = await fetch(
+      `${import.meta.env.VITE_API_URL}/api/jobs/${id}`,
+      {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify({ email: user.email })
+      }
+    );
+    if (res.ok) setJobs(prev => prev.filter(j => j.id !== id));
+  };
+
+  // Application des filtres
+  const filtered = jobs.filter(job => {
     const matchesSearch = [job.title, job.description]
-      .some(field => field.toLowerCase().includes(searchTerm.toLowerCase()));
+      .some(f => f.toLowerCase().includes(searchTerm.toLowerCase()));
     const matchesType = filterType === 'all' || job.contract_type === filterType;
-    const matchesLocation = job.location.toLowerCase().includes(filterLocation.toLowerCase());
+    const matchesLocation = job.location
+      .toLowerCase()
+      .includes(filterLocation.toLowerCase());
     return matchesSearch && matchesType && matchesLocation;
   });
 
@@ -38,59 +56,47 @@ function Home() {
     <div className="container">
       <h2>{t('welcome')}</h2>
 
-      {/* Search and Filters */}
-      <div style={{ display: 'flex', gap: '1rem', marginBottom: '1.5rem', flexWrap: 'wrap' }}>
+      {/* Barre de recherche & filtres */}
+      <div className="filter-bar">
         <input
+          className="filter-input"
           type="text"
-          placeholder={t('searchPlaceholder') || 'Search...'}
+          placeholder={t('searchPlaceholder')}
           value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          style={{ flex: '1', padding: '0.5rem' }}
+          onChange={e => setSearchTerm(e.target.value)}
         />
-
         <select
+          className="filter-select"
           value={filterType}
-          onChange={(e) => setFilterType(e.target.value)}
-          style={{ padding: '0.5rem' }}
+          onChange={e => setFilterType(e.target.value)}
         >
-          <option value="all">{t('allTypes') || 'All Types'}</option>
+          <option value="all">{t('allTypes')}</option>
           <option value="studentJob">{t('studentJob')}</option>
           <option value="internship">{t('internship')}</option>
           <option value="contract">{t('contract')}</option>
           <option value="volunteer">{t('volunteer')}</option>
         </select>
-
         <input
+          className="filter-input"
           type="text"
-          placeholder={t('locationPlaceholder') || 'Filter by location'}
+          placeholder={t('locationPlaceholder')}
           value={filterLocation}
-          onChange={(e) => setFilterLocation(e.target.value)}
-          style={{ flex: '1', padding: '0.5rem' }}
+          onChange={e => setFilterLocation(e.target.value)}
         />
       </div>
 
-      {error ? (
-        <p style={{ color: 'red' }}>{error}</p>
-      ) : (
-        Array.isArray(filteredJobs) ? (
-          filteredJobs.length > 0 ? (
-            filteredJobs.map((job) => (
-              <Job key={job.id} data={job} onDelete={user?.role === 'admin' ? async (id) => {
-                // Admin delete logic
-                const res = await fetch(
-                  `${import.meta.env.VITE_API_URL}/api/jobs/${id}`,
-                  { method: 'DELETE', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email: user.email }) }
-                );
-                if (res.ok) setJobs(prev => prev.filter(j => j.id !== id));
-              } : null} />
+      {error
+        ? <p className="error">{error}</p>
+        : filtered.length > 0
+          ? filtered.map(job => (
+              <Job
+                key={job.id}
+                data={job}
+                onDelete={user?.role === 'admin' ? deleteJob : undefined}
+              />
             ))
-          ) : (
-            <p>{t('noJobs')}</p>
-          )
-        ) : (
-          <p>{t('errorLoadingJobs')}</p>
-        )
-      )}
+          : <p>{t('noJobs')}</p>
+      }
     </div>
   );
 }

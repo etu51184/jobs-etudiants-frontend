@@ -62,7 +62,10 @@ const translations = {
     thursday: "Thursday",
     friday: "Friday",
     saturday: "Saturday",
-    sunday: "Sunday"
+    sunday: "Sunday",
+    searchPlaceholder: "Search jobs...",
+    allTypes: "All types",
+    locationPlaceholder: "Filter by location"
   },
   fr: {
     welcome: "Annonces étudiantes disponibles",
@@ -125,7 +128,10 @@ const translations = {
     thursday: "Jeudi",
     friday: "Vendredi",
     saturday: "Samedi",
-    sunday: "Dimanche"
+    sunday: "Dimanche",
+    searchPlaceholder: "Recherche…",
+    allTypes: "Tous types",
+    locationPlaceholder: "Filtrer par lieu"
   },
   nl: {
     welcome: "Beschikbare studentenjobs",
@@ -188,7 +194,10 @@ const translations = {
     thursday: "Donderdag",
     friday: "Vrijdag",
     saturday: "Zaterdag",
-    sunday: "Zondag"
+    sunday: "Zondag",
+    searchPlaceholder: "Zoeken…",
+    allTypes: "Alle types",
+    locationPlaceholder: "Filter op locatie"
   }
 };
 
