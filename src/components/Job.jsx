@@ -12,6 +12,8 @@ function Job({ data, onDelete }) {
   const navigate = useNavigate();
   const { t } = useLang();
   const { user } = useAuth();
+  console.log('🔍 Job.jsx user:', user);
+
 
   const handleClick = () => {
     navigate(`/job/${data.id}`);
