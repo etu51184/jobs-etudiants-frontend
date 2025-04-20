@@ -6,6 +6,11 @@ const Layout = () => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
 
+  const handleLogout = () => {
+    logout();             // déconnecte l'utilisateur
+    navigate("/");        // redirige vers l'accueil après déconnexion
+  };
+
   return (
     <div className="layout">
       <header>
@@ -17,7 +22,11 @@ const Layout = () => {
             {user ? (
               <>
                 {user.role === "admin" && <li><Link to="/admin/users">Admin</Link></li>}
-                <li><button onClick={logout}>Déconnexion</button></li>
+                <li>
+                  <button onClick={handleLogout}>
+                    Déconnexion
+                  </button>
+                </li>
               </>
             ) : (
               <li><Link to="/login">Connexion</Link></li>
@@ -25,9 +34,11 @@ const Layout = () => {
           </ul>
         </nav>
       </header>
+
       <main>
         <Outlet />
       </main>
+
       <footer>
         <p>© {new Date().getFullYear()} Student Jobs - Tous droits réservés.</p>
       </footer>
