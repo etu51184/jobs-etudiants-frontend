@@ -1,5 +1,5 @@
 import { Outlet, Link, useNavigate } from "react-router-dom";
-import "../Layout.css";
+import "./Layout.css";
 import { useAuth } from "../contexts/AuthContext";
 
 const Layout = () => {
