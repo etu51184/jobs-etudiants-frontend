@@ -4,6 +4,8 @@ import AuthPage from "./pages/AuthPage";
 import AddJobForm from './components/AddJobForm/AddJobForm';
 import AdminUsersPage from "./pages/AdminUsersPage";
 import Layout from "./components/Layout";
+import './App.css';
+
 
 function App() {
   return (
