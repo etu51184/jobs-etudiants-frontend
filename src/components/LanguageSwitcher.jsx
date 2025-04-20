@@ -1,20 +1,19 @@
 import React from 'react';
 import { useLang } from '../contexts/LanguageContext.jsx';
+import './LanguageSwitcher.css';
 
 export default function LanguageSwitcher() {
   const { lang, setLang } = useLang();
+  const langs = ['en', 'fr', 'nl'];
+  const currentIndex = langs.indexOf(lang);
+  const nextLang = langs[(currentIndex + 1) % langs.length];
+
   return (
     <button
-      onClick={() => setLang(lang === 'en' ? 'fr' : 'en')}
-      style={{
-        background: 'none',
-        border: 'none',
-        color: '#00cc66',
-        cursor: 'pointer',
-        fontSize: '0.9rem'
-      }}
+      className="lang-switcher"
+      onClick={() => setLang(nextLang)}
     >
-      {lang === 'en' ? 'FR' : 'EN'}
+      {nextLang.toUpperCase()}
     </button>
   );
 }

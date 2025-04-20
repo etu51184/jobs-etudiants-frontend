@@ -1,0 +1,15 @@
+/* src/components/LanguageSwitcher.css */
+
+.lang-switcher {
+  background: none;
+  border: none;
+  color: #00cc66;
+  cursor: pointer;
+  font-size: 0.9rem;
+  padding: 0 0.5rem;
+  transition: text-decoration 0.3s ease;
+}
+
+.lang-switcher:hover {
+  text-decoration: underline;
+}
