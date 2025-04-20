@@ -1,10 +1,10 @@
 import { Link, Outlet, useNavigate } from "react-router-dom";
-import { useContext } from "react";
-import { AuthContext } from "../contexts/AuthContext";
+import { useAuth } from "../contexts/AuthContext"; // 👈 on importe le hook
+
 import "./Layout.css";
 
 const Layout = () => {
-  const { user, logout } = useContext(AuthContext);
+  const { user, logout } = useAuth(); // 👈 on utilise le hook
   const navigate = useNavigate();
 
   const handleLogout = () => {
@@ -19,11 +19,12 @@ const Layout = () => {
         <Link to="/">Home</Link>
         <Link to="/add-job">Post Job</Link>
         {!user && <Link to="/login">Login</Link>}
-        {user && user.role === "admin" && (
-          <Link to="/admin/users">Admin</Link>
-        )}
+        {user && user.role === "admin" && <Link to="/admin/users">Admin</Link>}
         {user && (
-          <button onClick={handleLogout} style={{ border: "none", background: "none", color: "#007bff", cursor: "pointer" }}>
+          <button
+            onClick={handleLogout}
+            style={{ border: "none", background: "none", color: "#007bff", cursor: "pointer" }}
+          >
             Logout
           </button>
         )}
