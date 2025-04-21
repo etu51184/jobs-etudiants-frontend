@@ -1,52 +1,44 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-function parseJwt(token) {
-  try {
-    const base64Url = token.split('.')[1];
-    const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-    const jsonPayload = decodeURIComponent(
-      window.atob(base64)
-        .split('')
-        .map(c => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
-        .join('')
-    );
-    return JSON.parse(jsonPayload);
-  } catch (e) {
-    return null;
-  }
-}
-
+/**
+ * AuthContext: fournit les fonctions et états d'authentification.
+ * stocke { token, user } dans localStorage pour persistance.
+ */
 const AuthContext = createContext(null);
 
 export function AuthProvider({ children }) {
   const navigate = useNavigate();
+
+  // Charger le token et l'utilisateur depuis localStorage
   const [token, setToken] = useState(() => localStorage.getItem('token'));
   const [user, setUser] = useState(() => {
-    const stored = localStorage.getItem('token');
-    if (stored) {
-      const decoded = parseJwt(stored);
-      if (decoded && decoded.email && decoded.role) {
-        return { email: decoded.email, role: decoded.role };
-      }
-    }
-    return null;
+    const storedUser = localStorage.getItem('user');
+    return storedUser ? JSON.parse(storedUser) : null;
   });
 
+  // Synchroniser localStorage à chaque changement de token ou user
   useEffect(() => {
-    if (token) {
+    if (token && user) {
       localStorage.setItem('token', token);
+      localStorage.setItem('user', JSON.stringify(user));
     } else {
       localStorage.removeItem('token');
+      localStorage.removeItem('user');
     }
-  }, [token]);
+  }, [token, user]);
 
-  const login = (email, role, jwtToken) => {
-    setToken(jwtToken);
+  /**
+   * login : reçoit un objet { token, email, role }
+   * stocke le JWT et les infos utilisateur
+   */
+  const login = ({ token: newToken, email, role }) => {
+    setToken(newToken);
     setUser({ email, role });
     navigate('/');
   };
 
+  /** logout : nettoie le contexte et redirige vers /login */
   const logout = () => {
     setToken(null);
     setUser(null);

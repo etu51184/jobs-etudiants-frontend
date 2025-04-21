@@ -4,6 +4,9 @@ import { useAuth } from '../contexts/AuthContext.jsx';
 import { useLang } from '../contexts/LanguageContext.jsx';
 import '../App.css';
 
+/**
+ * AuthPage: handles login and registration.
+ */
 function AuthPage() {
   const { login } = useAuth();
   const { t } = useLang();
@@ -31,8 +34,15 @@ function AuthPage() {
         setMessage(data.message || t('serverError'));
         return;
       }
-      login(data.email, data.role, data.token);
-      navigate('/');
+      if (isLoginMode) {
+        // data: { token, email, role }
+        login({ token: data.token, email: data.email, role: data.role });
+        navigate('/');
+      } else {
+        // registration successful, prompt login
+        setMessage(t('jobPosted') /* reuse placeholder */ || 'Account created, please log in');
+        setIsLoginMode(true);
+      }
     } catch {
       setMessage(t('errorOccurred'));
     }
@@ -41,7 +51,10 @@ function AuthPage() {
   return (
     <div className="container">
       <h2>{isLoginMode ? t('login') : t('createAccount')}</h2>
-      <form onSubmit={handleAuth} style={{ display: 'flex', flexDirection: 'column', gap: '1rem', maxWidth: '400px', margin: '0 auto' }}>
+      <form
+        onSubmit={handleAuth}
+        style={{ display: 'flex', flexDirection: 'column', gap: '1rem', maxWidth: '400px', margin: '0 auto' }}
+      >
         <input
           type="email"
           placeholder={t('emailPlaceholder')}
@@ -56,9 +69,7 @@ function AuthPage() {
           onChange={(e) => setPassword(e.target.value)}
           required
         />
-        <button type="submit">
-          {isLoginMode ? t('login') : t('signUp')}
-        </button>
+        <button type="submit">{isLoginMode ? t('login') : t('signUp')}</button>
       </form>
       <div style={{ textAlign: 'center', marginTop: '1rem' }}>
         <button
@@ -72,7 +83,11 @@ function AuthPage() {
           {isLoginMode ? t('createAccount') : t('backToLogin')}
         </button>
       </div>
-      {message && <p className="auth-message" style={{ textAlign: 'center', marginTop: '1rem' }}>{message}</p>}
+      {message && (
+        <p className="auth-message" style={{ textAlign: 'center', marginTop: '1rem' }}>
+          {message}
+        </p>
+      )}
     </div>
   );
 }
