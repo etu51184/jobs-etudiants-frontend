@@ -5,11 +5,14 @@ import { useLang } from '../contexts/LanguageContext.jsx';
 import { useAuth } from '../contexts/AuthContext.jsx';
 import '../App.css';
 
+/**
+ * Home page with infinite scroll, server-side search & filters
+ */
 function Home() {
   const { t } = useLang();
   const { user, token } = useAuth();
 
-  // Pagination state
+  // Pagination and data state
   const [jobs, setJobs] = useState([]);
   const [page, setPage] = useState(1);
   const [pages, setPages] = useState(null);
@@ -21,7 +24,13 @@ function Home() {
   const [filterType, setFilterType] = useState('all');
   const [filterLocation, setFilterLocation] = useState('');
 
-  // Intersection Observer for infinite scroll
+  // Reset list when filters change
+  useEffect(() => {
+    setJobs([]);
+    setPage(1);
+  }, [searchTerm, filterType, filterLocation]);
+
+  // IntersectionObserver for infinite scroll
   const observer = useRef();
   const lastJobRef = useCallback(
     node => {
@@ -37,19 +46,26 @@ function Home() {
     [loading, page, pages]
   );
 
-  // Fetch jobs page
+  // Fetch jobs when page or filters change
   useEffect(() => {
     const fetchJobs = async () => {
       setLoading(true);
       setError('');
       try {
+        const params = new URLSearchParams({
+          page,
+          limit: 10,
+          search: searchTerm,
+          type: filterType,
+          location: filterLocation
+        });
         const res = await fetch(
-          `${import.meta.env.VITE_API_URL}/api/jobs?page=${page}&limit=10`,
+          `${import.meta.env.VITE_API_URL}/api/jobs?${params.toString()}`,
           { headers: token ? { Authorization: `Bearer ${token}` } : {} }
         );
         if (!res.ok) throw new Error(t('errorLoadingJobs'));
         const { jobs: newJobs, pages: totalPages } = await res.json();
-        setJobs(prev => [...prev, ...newJobs]);
+        setJobs(prev => (page === 1 ? newJobs : [...prev, ...newJobs]));
         setPages(totalPages);
       } catch (err) {
         setError(err.message);
@@ -58,7 +74,7 @@ function Home() {
       }
     };
     fetchJobs();
-  }, [page, t, token]);
+  }, [page, searchTerm, filterType, filterLocation, t, token]);
 
   // Delete handler for admin
   const deleteJob = async id => {
@@ -79,17 +95,6 @@ function Home() {
       }
     } catch {}
   };
-
-  // Apply search & filters
-  const filteredJobs = jobs.filter(job => {
-    const matchesSearch = [job.title, job.description]
-      .some(field => field.toLowerCase().includes(searchTerm.toLowerCase()));
-    const matchesType = filterType === 'all' || job.contract_type === filterType;
-    const matchesLocation = job.location
-      .toLowerCase()
-      .includes(filterLocation.toLowerCase());
-    return matchesSearch && matchesType && matchesLocation;
-  });
 
   return (
     <div className="container">
@@ -125,25 +130,16 @@ function Home() {
       </div>
 
       {/* Job List with Infinite Scroll */}
-      {filteredJobs.map((job, idx) => {
-        if (idx === filteredJobs.length - 1) {
-          return (
-            <Job
-              ref={lastJobRef}
-              key={job.id}
-              data={job}
-              onDelete={user?.role === 'admin' ? deleteJob : undefined}
-            />
-          );
-        } else {
-          return (
-            <Job
-              key={job.id}
-              data={job}
-              onDelete={user?.role === 'admin' ? deleteJob : undefined}
-            />
-          );
-        }
+      {jobs.map((job, idx) => {
+        const isLast = idx === jobs.length - 1;
+        return (
+          <Job
+            ref={isLast ? lastJobRef : null}
+            key={job.id}
+            data={job}
+            onDelete={user?.role === 'admin' ? deleteJob : undefined}
+          />
+        );
       })}
 
       {loading && <p>{t('loading')}</p>}
