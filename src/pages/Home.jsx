@@ -8,14 +8,14 @@ import '../App.css';
 /**
  * Home page with infinite scroll, server-side search & filters
  */
-function Home() {
+export default function Home() {
   const { t } = useLang();
   const { user, token } = useAuth();
 
   // Pagination and data state
   const [jobs, setJobs] = useState([]);
   const [page, setPage] = useState(1);
-  const [pages, setPages] = useState(null);
+  const [pages, setPages] = useState(0);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
@@ -64,9 +64,15 @@ function Home() {
           { headers: token ? { Authorization: `Bearer ${token}` } : {} }
         );
         if (!res.ok) throw new Error(t('errorLoadingJobs'));
-        const { jobs: newJobs, pages: totalPages } = await res.json();
+        const data = await res.json();
+        // Handle response shape: { jobs: [], pages } or direct array
+        const newJobs = Array.isArray(data.jobs)
+          ? data.jobs
+          : Array.isArray(data)
+            ? data
+            : [];
         setJobs(prev => (page === 1 ? newJobs : [...prev, ...newJobs]));
-        setPages(totalPages);
+        setPages(typeof data.pages === 'number' ? data.pages : 0);
       } catch (err) {
         setError(err.message);
       } finally {
@@ -78,6 +84,7 @@ function Home() {
 
   // Delete handler for admin
   const deleteJob = async id => {
+    if (!window.confirm(t('confirmDelete'))) return;
     try {
       const res = await fetch(
         `${import.meta.env.VITE_API_URL}/api/jobs/${id}`,
@@ -86,14 +93,18 @@ function Home() {
           headers: {
             'Content-Type': 'application/json',
             Authorization: `Bearer ${token}`
-          },
-          body: JSON.stringify({ email: user.email })
+          }
         }
       );
-      if (res.ok) {
-        setJobs(prev => prev.filter(job => job.id !== id));
+      if (!res.ok) {
+        const err = await res.json();
+        setError(err.message || t('deleteError'));
+        return;
       }
-    } catch {}
+      setJobs(prev => prev.filter(job => job.id !== id));
+    } catch {
+      setError(t('deleteError'));
+    }
   };
 
   return (
@@ -130,6 +141,7 @@ function Home() {
       </div>
 
       {/* Job List with Infinite Scroll */}
+      {jobs.length === 0 && !loading && <p>{t('noJobs')}</p>}
       {jobs.map((job, idx) => {
         const isLast = idx === jobs.length - 1;
         return (
@@ -147,5 +159,3 @@ function Home() {
     </div>
   );
 }
-
-export default Home;
