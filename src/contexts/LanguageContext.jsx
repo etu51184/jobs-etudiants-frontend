@@ -52,10 +52,7 @@ const translations = {
     serverError: "Server error",
     errorOccurred: "An error occurred.",
     confirmPost: "Are you sure you want to post this job?",
-    studentJob: "Student Job",
-    internship: "Internship",
-    contract: "Contract",
-    volunteer: "Volunteer",
+    // Weekday translations
     monday: "Monday",
     tuesday: "Tuesday",
     wednesday: "Wednesday",
@@ -63,6 +60,12 @@ const translations = {
     friday: "Friday",
     saturday: "Saturday",
     sunday: "Sunday",
+    // Contract types
+    studentJob: "Student Job",
+    internship: "Internship",
+    contract: "Contract",
+    volunteer: "Volunteer",
+    // Filters & search
     searchPlaceholder: "Search jobs...",
     allTypes: "All types",
     locationPlaceholder: "Filter by location"
@@ -118,10 +121,7 @@ const translations = {
     serverError: "Erreur serveur",
     errorOccurred: "Une erreur s'est produite.",
     confirmPost: "Êtes-vous sûr de vouloir publier cette annonce ?",
-    studentJob: "Job étudiant",
-    internship: "Stage",
-    contract: "CDD",
-    volunteer: "Bénévolat",
+    // Weekday translations
     monday: "Lundi",
     tuesday: "Mardi",
     wednesday: "Mercredi",
@@ -129,6 +129,12 @@ const translations = {
     friday: "Vendredi",
     saturday: "Samedi",
     sunday: "Dimanche",
+    // Contract types
+    studentJob: "Job étudiant",
+    internship: "Stage",
+    contract: "CDD",
+    volunteer: "Bénévolat",
+    // Filters & search
     searchPlaceholder: "Recherche…",
     allTypes: "Tous types",
     locationPlaceholder: "Filtrer par lieu"
@@ -184,10 +190,7 @@ const translations = {
     serverError: "Serverfout",
     errorOccurred: "Er is een fout opgetreden.",
     confirmPost: "Weet je zeker dat je deze vacature wilt plaatsen?",
-    studentJob: "Studentjob",
-    internship: "Stage",
-    contract: "Contract",
-    volunteer: "Vrijwilligerswerk",
+    // Weekday translations
     monday: "Maandag",
     tuesday: "Dinsdag",
     wednesday: "Woensdag",
@@ -195,6 +198,12 @@ const translations = {
     friday: "Vrijdag",
     saturday: "Zaterdag",
     sunday: "Zondag",
+    // Contract types
+    studentJob: "Studentjob",
+    internship: "Stage",
+    contract: "Contract",
+    volunteer: "Vrijwilligerswerk",
+    // Filters & search
     searchPlaceholder: "Zoeken…",
     allTypes: "Alle types",
     locationPlaceholder: "Filter op locatie"
@@ -205,7 +214,7 @@ const LanguageContext = createContext({ lang: 'en', setLang: () => {}, t: (key) 
 
 export function LanguageProvider({ children }) {
   const [lang, setLang] = useState('fr');
-  const t = (key) => translations[lang][key] || key;
+  const t = key => translations[lang][key] || key;
   return (
     <LanguageContext.Provider value={{ lang, setLang, t }}>
       {children}

@@ -7,6 +7,7 @@ import AuthPage from "./pages/AuthPage";
 import PostJobPage from "./pages/PostJobPage";
 import AdminUsersPage from "./pages/AdminUsersPage";
 import JobDetails from "./pages/JobDetails";
+import Profile from "./pages/Profile";
 import './App.css';
 
 // Requires user to be authenticated
@@ -26,6 +27,7 @@ function App() {
     <Routes>
       <Route element={<Layout />}>
         <Route path="/" element={<Home />} />
+        <Route path="/profile" element={<Profile />} />
         <Route path="/login" element={<AuthPage />} />
         <Route
           path="/add-job"
