@@ -1,23 +1,24 @@
+// src/contexts/AuthContext.jsx
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 /**
- * AuthContext: fournit les fonctions et états d'authentification.
- * stocke { token, user } dans localStorage pour persistance.
+ * AuthContext: gère la session utilisateur (token + infos)
+ * Persiste le token et l’objet user (email + role) dans localStorage.
  */
 const AuthContext = createContext(null);
 
 export function AuthProvider({ children }) {
   const navigate = useNavigate();
 
-  // Charger le token et l'utilisateur depuis localStorage
+  // Charger token & user en initial
   const [token, setToken] = useState(() => localStorage.getItem('token'));
   const [user, setUser] = useState(() => {
-    const storedUser = localStorage.getItem('user');
-    return storedUser ? JSON.parse(storedUser) : null;
+    const stored = localStorage.getItem('user');
+    return stored ? JSON.parse(stored) : null;
   });
 
-  // Synchroniser localStorage à chaque changement de token ou user
+  // Sync localStorage quand token ou user change
   useEffect(() => {
     if (token && user) {
       localStorage.setItem('token', token);
@@ -29,8 +30,8 @@ export function AuthProvider({ children }) {
   }, [token, user]);
 
   /**
-   * login : reçoit un objet { token, email, role }
-   * stocke le JWT et les infos utilisateur
+   * login : reçoit { token, email, role }
+   * stocke ces valeurs et redirige sur la home
    */
   const login = ({ token: newToken, email, role }) => {
     setToken(newToken);
@@ -38,7 +39,7 @@ export function AuthProvider({ children }) {
     navigate('/');
   };
 
-  /** logout : nettoie le contexte et redirige vers /login */
+  /** logout : supprime session et redirige sur /login */
   const logout = () => {
     setToken(null);
     setUser(null);

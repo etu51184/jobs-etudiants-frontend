@@ -1,13 +1,14 @@
+// src/pages/AuthPage.jsx
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext.jsx';
 import { useLang } from '../contexts/LanguageContext.jsx';
 import '../App.css';
 
-/**
- * AuthPage: handles login and registration.
+/** 
+ * AuthPage : gère connexion et inscription 
  */
-function AuthPage() {
+export default function AuthPage() {
   const { login } = useAuth();
   const { t } = useLang();
   const navigate = useNavigate();
@@ -19,9 +20,8 @@ function AuthPage() {
 
   const handleAuth = async (e) => {
     e.preventDefault();
-    const url = isLoginMode
-      ? `${import.meta.env.VITE_API_URL}/api/users/login`
-      : `${import.meta.env.VITE_API_URL}/api/users/register`;
+    const endpoint = isLoginMode ? 'login' : 'register';
+    const url = `${import.meta.env.VITE_API_URL}/api/users/${endpoint}`;
 
     try {
       const res = await fetch(url, {
@@ -34,13 +34,14 @@ function AuthPage() {
         setMessage(data.message || t('serverError'));
         return;
       }
+
       if (isLoginMode) {
-        // data: { token, email, role }
+        // data = { token, email, role }
         login({ token: data.token, email: data.email, role: data.role });
         navigate('/');
       } else {
-        // registration successful, prompt login
-        setMessage(t('jobPosted') /* reuse placeholder */ || 'Account created, please log in');
+        // inscription réussie : passer en mode login
+        setMessage(t('jobPosted') /* ou un message dédié */);
         setIsLoginMode(true);
       }
     } catch {
@@ -59,14 +60,14 @@ function AuthPage() {
           type="email"
           placeholder={t('emailPlaceholder')}
           value={email}
-          onChange={(e) => setEmail(e.target.value)}
+          onChange={e => setEmail(e.target.value)}
           required
         />
         <input
           type="password"
           placeholder={t('passwordPlaceholder')}
           value={password}
-          onChange={(e) => setPassword(e.target.value)}
+          onChange={e => setPassword(e.target.value)}
           required
         />
         <button type="submit">{isLoginMode ? t('login') : t('signUp')}</button>
@@ -74,22 +75,13 @@ function AuthPage() {
       <div style={{ textAlign: 'center', marginTop: '1rem' }}>
         <button
           type="button"
-          onClick={() => {
-            setIsLoginMode(!isLoginMode);
-            setMessage('');
-          }}
+          onClick={() => { setIsLoginMode(!isLoginMode); setMessage(''); }}
           style={{ background: 'none', border: 'none', color: '#00cc66', cursor: 'pointer' }}
         >
           {isLoginMode ? t('createAccount') : t('backToLogin')}
         </button>
       </div>
-      {message && (
-        <p className="auth-message" style={{ textAlign: 'center', marginTop: '1rem' }}>
-          {message}
-        </p>
-      )}
+      {message && <p className="auth-message" style={{ textAlign: 'center', marginTop: '1rem' }}>{message}</p>}
     </div>
   );
 }
-
-export default AuthPage;
