@@ -6,31 +6,31 @@ import { useAuth } from '../contexts/AuthContext.jsx';
 import '../App.css';
 
 /**
- * Home page with infinite scroll, server-side search & filters
+ * Page d'accueil avec infinite scroll, recherche et filtres côté serveur
  */
 export default function Home() {
   const { t } = useLang();
   const { user, token } = useAuth();
 
-  // Pagination and data state
+  // États pagination et données
   const [jobs, setJobs] = useState([]);
   const [page, setPage] = useState(1);
   const [pages, setPages] = useState(0);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
-  // Search & filter state
+  // États recherche & filtres
   const [searchTerm, setSearchTerm] = useState('');
   const [filterType, setFilterType] = useState('all');
   const [filterLocation, setFilterLocation] = useState('');
 
-  // Reset list when filters change
+  // Réinitialise la liste quand un filtre change
   useEffect(() => {
     setJobs([]);
     setPage(1);
   }, [searchTerm, filterType, filterLocation]);
 
-  // IntersectionObserver for infinite scroll
+  // IntersectionObserver pour infinite scroll
   const observer = useRef();
   const lastJobRef = useCallback(
     node => {
@@ -46,7 +46,7 @@ export default function Home() {
     [loading, page, pages]
   );
 
-  // Fetch jobs when page or filters change
+  // Récupération des jobs quand page ou filtres changent
   useEffect(() => {
     const fetchJobs = async () => {
       setLoading(true);
@@ -65,7 +65,7 @@ export default function Home() {
         );
         if (!res.ok) throw new Error(t('errorLoadingJobs'));
         const data = await res.json();
-        // Handle response shape: { jobs: [], pages } or direct array
+        // data.jobs ou data (array)
         const newJobs = Array.isArray(data.jobs)
           ? data.jobs
           : Array.isArray(data)
@@ -82,7 +82,7 @@ export default function Home() {
     fetchJobs();
   }, [page, searchTerm, filterType, filterLocation, t, token]);
 
-  // Delete handler for admin
+  // Suppression pour admin
   const deleteJob = async id => {
     if (!window.confirm(t('confirmDelete'))) return;
     try {
@@ -111,7 +111,7 @@ export default function Home() {
     <div className="container">
       <h2>{t('welcome')}</h2>
 
-      {/* Search & Filters */}
+      {/* Barre de recherche & filtres */}
       <div className="filter-bar">
         <input
           className="filter-input"
@@ -140,13 +140,22 @@ export default function Home() {
         />
       </div>
 
-      {/* Job List with Infinite Scroll */}
+      {/* Liste des jobs avec infinite scroll */}
       {jobs.length === 0 && !loading && <p>{t('noJobs')}</p>}
       {jobs.map((job, idx) => {
         const isLast = idx === jobs.length - 1;
+        if (isLast) {
+          return (
+            <div ref={lastJobRef} key={job.id}>
+              <Job
+                data={job}
+                onDelete={user?.role === 'admin' ? deleteJob : undefined}
+              />
+            </div>
+          );
+        }
         return (
           <Job
-            ref={isLast ? lastJobRef : null}
             key={job.id}
             data={job}
             onDelete={user?.role === 'admin' ? deleteJob : undefined}
