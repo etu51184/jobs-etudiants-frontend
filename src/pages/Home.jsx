@@ -24,9 +24,8 @@ export default function Home() {
   const [filterType, setFilterType] = useState('all');
   const [filterLocation, setFilterLocation] = useState('');
 
-  // Reset list when filters change
+  // Reset page when filters change
   useEffect(() => {
-    setJobs([]);
     setPage(1);
   }, [searchTerm, filterType, filterLocation]);
 
@@ -46,7 +45,7 @@ export default function Home() {
     [loading, page, pages]
   );
 
-  // Fetch jobs when page or filters change
+  // Fetch jobs on page or filters change
   useEffect(() => {
     const fetchJobs = async () => {
       setLoading(true);
@@ -65,12 +64,7 @@ export default function Home() {
         );
         if (!res.ok) throw new Error(t('errorLoadingJobs'));
         const data = await res.json();
-        // Handle response shape: { jobs: [], pages } or direct array
-        const newJobs = Array.isArray(data.jobs)
-          ? data.jobs
-          : Array.isArray(data)
-            ? data
-            : [];
+        const newJobs = Array.isArray(data.jobs) ? data.jobs : Array.isArray(data) ? data : [];
         setJobs(newJobs);
         setPages(typeof data.pages === 'number' ? data.pages : 0);
       } catch (err) {
@@ -144,9 +138,18 @@ export default function Home() {
       {jobs.length === 0 && !loading && <p>{t('noJobs')}</p>}
       {jobs.map((job, idx) => {
         const isLast = idx === jobs.length - 1;
+        if (isLast) {
+          return (
+            <div ref={lastJobRef} key={job.id}>
+              <Job
+                data={job}
+                onDelete={user?.role === 'admin' ? deleteJob : undefined}
+              />
+            </div>
+          );
+        }
         return (
           <Job
-            ref={isLast ? lastJobRef : null}
             key={job.id}
             data={job}
             onDelete={user?.role === 'admin' ? deleteJob : undefined}
