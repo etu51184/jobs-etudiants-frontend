@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { forwardRef } from 'react';
 import './Job.css';
 import { useNavigate } from 'react-router-dom';
 import { useLang } from '../contexts/LanguageContext.jsx';
@@ -7,13 +7,12 @@ import { useAuth } from '../contexts/AuthContext.jsx';
 /**
  * Job card component that shows job details and, for admins,
  * a delete button to remove any job directly from the list.
+ * Supports forwarding ref for infinite scroll observer.
  */
-function Job({ data, onDelete }) {
+const Job = forwardRef(({ data, onDelete }, ref) => {
   const navigate = useNavigate();
   const { t } = useLang();
   const { user } = useAuth();
-  console.log('🔍 Job.jsx user:', user);
-
 
   const handleClick = () => {
     navigate(`/job/${data.id}`);
@@ -21,19 +20,20 @@ function Job({ data, onDelete }) {
 
   const handleAdminDelete = (e) => {
     e.stopPropagation();
-    if (window.confirm(t('confirmDelete'))) {
+    if (onDelete && window.confirm(t('confirmDelete'))) {
       onDelete(data.id);
     }
   };
 
   return (
     <div
+      ref={ref}
       className="job-card"
       onClick={handleClick}
       style={{ cursor: 'pointer', position: 'relative' }}
     >
       {/* Admin-only delete button on job cards */}
-      {user?.role === 'admin' && (
+      {user?.role === 'admin' && onDelete && (
         <button
           onClick={handleAdminDelete}
           style={{
@@ -59,9 +59,7 @@ function Job({ data, onDelete }) {
       {data.contract_type === 'studentJob' && (
         <>
           {data.schedule && <p><strong>{t('schedule')}:</strong> {data.schedule}</p>}
-          {data.days?.length > 0 && (
-            <p><strong>{t('days')}:</strong> {data.days.map(day => t(day)).join(', ')}</p>
-          )}
+          {data.days?.length > 0 && <p><strong>{t('days')}:</strong> {data.days.map(day => t(day)).join(', ')}</p>}
           {data.salary && <p><strong>{t('salary')}:</strong> {data.salary}</p>}
         </>
       )}
@@ -90,6 +88,6 @@ function Job({ data, onDelete }) {
       )}
     </div>
   );
-}
+});
 
 export default Job;
