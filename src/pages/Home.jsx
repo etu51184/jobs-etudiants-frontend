@@ -12,7 +12,7 @@ export default function Home() {
   const { t } = useLang();
   const { user, token } = useAuth();
 
-  // États de pagination et données
+  // État des annonces et pagination
   const [jobs, setJobs] = useState([]);
   const [page, setPage] = useState(1);
   const [pages, setPages] = useState(0);
@@ -24,7 +24,7 @@ export default function Home() {
   const [filterType, setFilterType] = useState('all');
   const [filterLocation, setFilterLocation] = useState('');
 
-  // Réinitialiser la page et la liste lors du changement de filtres
+  // Réinitialiser la page et la liste quand les filtres changent
   useEffect(() => {
     setPage(1);
     setJobs([]);
@@ -46,7 +46,7 @@ export default function Home() {
     [loading, page, pages]
   );
 
-  // Charger les jobs à chaque changement de page ou filtres
+  // Charger les annonces depuis l'API
   useEffect(() => {
     const fetchJobs = async () => {
       setLoading(true);
@@ -65,18 +65,10 @@ export default function Home() {
         );
         if (!res.ok) throw new Error(t('errorLoadingJobs'));
         const data = await res.json();
-        // Le backend renvoie { jobs: [...], pages: n } ou un tableau simple
-        const newJobs = Array.isArray(data.jobs)
-          ? data.jobs
-          : Array.isArray(data)
-          ? data
-          : [];
-        // Gestion de l'agrégation pour scroll infini
-        if (page === 1) {
-          setJobs(newJobs);
-        } else {
-          setJobs(prev => [...prev, ...newJobs]);
-        }
+        // data.jobs et data.pages attendus
+        const newJobs = Array.isArray(data.jobs) ? data.jobs : [];
+        // Si page 1, on remplace, sinon on ajoute
+        setJobs(prev => (page === 1 ? newJobs : [...prev, ...newJobs]));
         setPages(typeof data.pages === 'number' ? data.pages : 0);
       } catch (err) {
         setError(err.message);
@@ -87,7 +79,7 @@ export default function Home() {
     fetchJobs();
   }, [page, searchTerm, filterType, filterLocation, t, token]);
 
-  // Suppression pour admin
+  // Suppression pour l'admin
   const deleteJob = async id => {
     if (!window.confirm(t('confirmDelete'))) return;
     try {
@@ -145,23 +137,20 @@ export default function Home() {
         />
       </div>
 
-      {/* Liste d'annonces avec scroll infini */}
+      {/* Liste d'annonces */}
       {jobs.length === 0 && !loading && <p>{t('noJobs')}</p>}
       {jobs.map((job, idx) => {
         const isLast = idx === jobs.length - 1;
-        return isLast ? (
-          <div ref={lastJobRef} key={job.id}>
+        return (
+          <div
+            ref={isLast ? lastJobRef : null}
+            key={job.id}
+          >
             <Job
               data={job}
               onDelete={user?.role === 'admin' ? deleteJob : undefined}
             />
           </div>
-        ) : (
-          <Job
-            key={job.id}
-            data={job}
-            onDelete={user?.role === 'admin' ? deleteJob : undefined}
-          />
         );
       })}
 
