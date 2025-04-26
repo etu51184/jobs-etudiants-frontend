@@ -6,26 +6,21 @@ import { useAuth } from '../contexts/AuthContext.jsx';
 import { useLang } from '../contexts/LanguageContext.jsx';
 import '../App.css';
 
-/**
- * Profile page: displays jobs created by the logged-in user,
- * with the ability to delete each.
- */
 export default function Profile() {
   const { t } = useLang();
   const { user, token } = useAuth();
   const navigate = useNavigate();
+
   const [jobs, setJobs] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
-  // Redirect unauthenticated users
+  // Rediriger si non connecté
   useEffect(() => {
-    if (!user) {
-      navigate('/login');
-    }
+    if (!user) navigate('/login');
   }, [user, navigate]);
 
-  // Fetch user's jobs
+  // Récupérer mes annonces
   useEffect(() => {
     if (!user) return;
     const fetchMyJobs = async () => {
@@ -33,16 +28,17 @@ export default function Profile() {
       setError('');
       try {
         const res = await fetch(
-          `${import.meta.env.VITE_API_URL}/api/users/me/jobs`,
+          `${import.meta.env.VITE_API_URL}/api/jobs/me`,
           { headers: { Authorization: `Bearer ${token}` } }
         );
         if (!res.ok) {
           const err = await res.json();
-          throw new Error(err.message || t('errorLoadingJobs'));
+          throw new Error(err.error || t('errorLoadingJobs'));
         }
         const data = await res.json();
         setJobs(data);
       } catch (err) {
+        console.error(err);
         setError(err.message);
       } finally {
         setLoading(false);
@@ -51,7 +47,7 @@ export default function Profile() {
     fetchMyJobs();
   }, [user, token, t]);
 
-  // Delete handler
+  // Supprimer une de mes annonces
   const handleDelete = async (id) => {
     if (!window.confirm(t('confirmDelete'))) return;
     try {
@@ -67,21 +63,24 @@ export default function Profile() {
       );
       if (!res.ok) {
         const err = await res.json();
-        throw new Error(err.message || t('deleteError'));
+        throw new Error(err.error || t('deleteError'));
       }
       setJobs(prev => prev.filter(job => job.id !== id));
     } catch (err) {
+      console.error(err);
       setError(err.message);
     }
   };
 
   return (
     <div className="container">
-      <h2>{t('profile')} - {user?.email}</h2>
+      <h2>{t('profile')} – {user?.username}</h2>
+
       {loading && <p>{t('loading')}</p>}
       {error && <p className="error">{error}</p>}
       {!loading && jobs.length === 0 && <p>{t('noJobs')}</p>}
-      {jobs.map((job) => (
+
+      {jobs.map(job => (
         <Job
           key={job.id}
           data={job}
