@@ -5,33 +5,32 @@ import { useLang } from '../contexts/LanguageContext.jsx';
 import { useAuth } from '../contexts/AuthContext.jsx';
 import '../App.css';
 
-/**
- * Page d'accueil avec scroll infini, recherche serveur et filtres
- */
 export default function Home() {
   const { t } = useLang();
   const { user, token } = useAuth();
 
-  // État des annonces et pagination
+  // --- pagination & data ---
   const [jobs, setJobs] = useState([]);
   const [page, setPage] = useState(1);
-  const [pages, setPages] = useState(0);
+  const [pages, setPages] = useState(1);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
-  // Recherche & filtres
+  const limit = 10;
+  const observer = useRef();
+
+  // --- recherche & filtres ---
   const [searchTerm, setSearchTerm] = useState('');
   const [filterType, setFilterType] = useState('all');
   const [filterLocation, setFilterLocation] = useState('');
 
-  // Réinitialiser la page et la liste quand les filtres changent
+  // Quand on change de filtre/recherche, on repart de la page 1
   useEffect(() => {
     setPage(1);
     setJobs([]);
   }, [searchTerm, filterType, filterLocation]);
 
-  // IntersectionObserver pour scroll infini
-  const observer = useRef();
+  // Observer sur la dernière carte pour déclencher la page suivante
   const lastJobRef = useCallback(
     node => {
       if (loading) return;
@@ -46,7 +45,7 @@ export default function Home() {
     [loading, page, pages]
   );
 
-  // Charger les annonces depuis l'API
+  // Fetch serveur à chaque changement de page ou de filtres
   useEffect(() => {
     const fetchJobs = async () => {
       setLoading(true);
@@ -54,7 +53,7 @@ export default function Home() {
       try {
         const params = new URLSearchParams({
           page,
-          limit: 10,
+          limit,
           search: searchTerm,
           type: filterType,
           location: filterLocation
@@ -64,22 +63,37 @@ export default function Home() {
           { headers: token ? { Authorization: `Bearer ${token}` } : {} }
         );
         if (!res.ok) throw new Error(t('errorLoadingJobs'));
+
         const data = await res.json();
-        // data.jobs et data.pages attendus
-        const newJobs = Array.isArray(data.jobs) ? data.jobs : [];
-        // Si page 1, on remplace, sinon on ajoute
-        setJobs(prev => (page === 1 ? newJobs : [...prev, ...newJobs]));
-        setPages(typeof data.pages === 'number' ? data.pages : 0);
+        let fetched = [];
+        let total = 1;
+
+        // si on reçoit { jobs: [...], pages: N }
+        if (Array.isArray(data.jobs)) {
+          fetched = data.jobs;
+          total = typeof data.pages === 'number' ? data.pages : 1;
+        }
+        // si l'API renvoie juste un tableau
+        else if (Array.isArray(data)) {
+          if (page === 1) fetched = data.slice(0, limit);
+          else fetched = []; // plus de pages dispo
+          total = 1;
+        }
+
+        setJobs(prev => (page === 1 ? fetched : [...prev, ...fetched]));
+        setPages(total);
       } catch (err) {
+        console.error(err);
         setError(err.message);
       } finally {
         setLoading(false);
       }
     };
-    fetchJobs();
-  }, [page, searchTerm, filterType, filterLocation, t, token]);
 
-  // Suppression pour l'admin
+    fetchJobs();
+  }, [page, searchTerm, filterType, filterLocation, token, t]);
+
+  // Handler de suppression (admin)
   const deleteJob = async id => {
     if (!window.confirm(t('confirmDelete'))) return;
     try {
@@ -98,7 +112,7 @@ export default function Home() {
         setError(err.message || t('deleteError'));
         return;
       }
-      setJobs(prev => prev.filter(job => job.id !== id));
+      setJobs(prev => prev.filter(j => j.id !== id));
     } catch {
       setError(t('deleteError'));
     }
@@ -108,7 +122,7 @@ export default function Home() {
     <div className="container">
       <h2>{t('welcome')}</h2>
 
-      {/* Barre de recherche et filtres */}
+      {/* Recherche & filtres */}
       <div className="filter-bar">
         <input
           className="filter-input"
@@ -142,10 +156,7 @@ export default function Home() {
       {jobs.map((job, idx) => {
         const isLast = idx === jobs.length - 1;
         return (
-          <div
-            ref={isLast ? lastJobRef : null}
-            key={job.id}
-          >
+          <div ref={isLast ? lastJobRef : null} key={job.id}>
             <Job
               data={job}
               onDelete={user?.role === 'admin' ? deleteJob : undefined}
