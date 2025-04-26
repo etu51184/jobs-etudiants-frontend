@@ -6,30 +6,31 @@ import { useAuth } from '../contexts/AuthContext.jsx';
 import '../App.css';
 
 /**
- * Home page with infinite scroll, server-side search & filters
+ * Page d'accueil avec scroll infini, recherche serveur et filtres
  */
 export default function Home() {
   const { t } = useLang();
   const { user, token } = useAuth();
 
-  // Pagination and data state
+  // États de pagination et données
   const [jobs, setJobs] = useState([]);
   const [page, setPage] = useState(1);
   const [pages, setPages] = useState(0);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
-  // Search & filter state
+  // Recherche & filtres
   const [searchTerm, setSearchTerm] = useState('');
   const [filterType, setFilterType] = useState('all');
   const [filterLocation, setFilterLocation] = useState('');
 
-  // Reset page when filters change
+  // Réinitialiser la page et la liste lors du changement de filtres
   useEffect(() => {
     setPage(1);
+    setJobs([]);
   }, [searchTerm, filterType, filterLocation]);
 
-  // IntersectionObserver for infinite scroll
+  // IntersectionObserver pour scroll infini
   const observer = useRef();
   const lastJobRef = useCallback(
     node => {
@@ -45,7 +46,7 @@ export default function Home() {
     [loading, page, pages]
   );
 
-  // Fetch jobs on page or filters change
+  // Charger les jobs à chaque changement de page ou filtres
   useEffect(() => {
     const fetchJobs = async () => {
       setLoading(true);
@@ -64,8 +65,18 @@ export default function Home() {
         );
         if (!res.ok) throw new Error(t('errorLoadingJobs'));
         const data = await res.json();
-        const newJobs = Array.isArray(data.jobs) ? data.jobs : Array.isArray(data) ? data : [];
-        setJobs(newJobs);
+        // Le backend renvoie { jobs: [...], pages: n } ou un tableau simple
+        const newJobs = Array.isArray(data.jobs)
+          ? data.jobs
+          : Array.isArray(data)
+          ? data
+          : [];
+        // Gestion de l'agrégation pour scroll infini
+        if (page === 1) {
+          setJobs(newJobs);
+        } else {
+          setJobs(prev => [...prev, ...newJobs]);
+        }
         setPages(typeof data.pages === 'number' ? data.pages : 0);
       } catch (err) {
         setError(err.message);
@@ -76,7 +87,7 @@ export default function Home() {
     fetchJobs();
   }, [page, searchTerm, filterType, filterLocation, t, token]);
 
-  // Delete handler for admin
+  // Suppression pour admin
   const deleteJob = async id => {
     if (!window.confirm(t('confirmDelete'))) return;
     try {
@@ -105,7 +116,7 @@ export default function Home() {
     <div className="container">
       <h2>{t('welcome')}</h2>
 
-      {/* Search & Filters */}
+      {/* Barre de recherche et filtres */}
       <div className="filter-bar">
         <input
           className="filter-input"
@@ -134,21 +145,18 @@ export default function Home() {
         />
       </div>
 
-      {/* Job List with Infinite Scroll */}
+      {/* Liste d'annonces avec scroll infini */}
       {jobs.length === 0 && !loading && <p>{t('noJobs')}</p>}
       {jobs.map((job, idx) => {
         const isLast = idx === jobs.length - 1;
-        if (isLast) {
-          return (
-            <div ref={lastJobRef} key={job.id}>
-              <Job
-                data={job}
-                onDelete={user?.role === 'admin' ? deleteJob : undefined}
-              />
-            </div>
-          );
-        }
-        return (
+        return isLast ? (
+          <div ref={lastJobRef} key={job.id}>
+            <Job
+              data={job}
+              onDelete={user?.role === 'admin' ? deleteJob : undefined}
+            />
+          </div>
+        ) : (
           <Job
             key={job.id}
             data={job}
