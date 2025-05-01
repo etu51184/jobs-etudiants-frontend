@@ -1,27 +1,70 @@
-import React, { forwardRef } from 'react';
+// src/components/Job.jsx
+
+import React, { forwardRef, useState, useEffect } from 'react';
 import './Job.css';
 import { useNavigate } from 'react-router-dom';
 import { useLang } from '../contexts/LanguageContext.jsx';
 import { useAuth } from '../contexts/AuthContext.jsx';
 
 /**
- * Job card component that shows job details and, for admins,
- * a delete button to remove any job directly from the list.
+ * Job card component that shows job details, allows users to favorite jobs,
+ * and—for admins—a delete button to remove any job directly from the list.
  * Supports forwarding ref for infinite scroll observer.
  */
 const Job = forwardRef(({ data, onDelete }, ref) => {
   const navigate = useNavigate();
   const { t } = useLang();
-  const { user } = useAuth();
+  const { user, token } = useAuth();
+  const [isFav, setIsFav] = useState(false);
 
+  // Navigate to job detail
   const handleClick = () => {
     navigate(`/job/${data.id}`);
   };
 
+  // Admin delete
   const handleAdminDelete = (e) => {
     e.stopPropagation();
     if (onDelete && window.confirm(t('confirmDelete'))) {
       onDelete(data.id);
+    }
+  };
+
+  // Fetch favorite status for this job
+  useEffect(() => {
+    if (user && token) {
+      fetch(`${import.meta.env.VITE_API_URL}/api/favorites/${data.id}`, {
+        method: 'GET',
+        headers: { Authorization: `Bearer ${token}` }
+      })
+        .then(res => res.json())
+        .then(({ isFavorite }) => {
+          if (typeof isFavorite === 'boolean') {
+            setIsFav(isFavorite);
+          }
+        })
+        .catch(() => {});
+    }
+  }, [user, token, data.id]);
+
+  // Toggle favorite
+  const toggleFavorite = async (e) => {
+    e.stopPropagation();
+    if (!user) {
+      alert(t('mustLogin'));
+      return;
+    }
+    const method = isFav ? 'DELETE' : 'POST';
+    try {
+      const res = await fetch(
+        `${import.meta.env.VITE_API_URL}/api/favorites/${data.id}`,
+        { method, headers: { Authorization: `Bearer ${token}` } }
+      );
+      if (res.ok) {
+        setIsFav(prev => !prev);
+      }
+    } catch {
+      // ignore errors
     }
   };
 
@@ -32,7 +75,27 @@ const Job = forwardRef(({ data, onDelete }, ref) => {
       onClick={handleClick}
       style={{ cursor: 'pointer', position: 'relative' }}
     >
-      {/* Admin-only delete button on job cards */}
+      {/* Favorite toggle */}
+      {user && (
+        <button
+          onClick={toggleFavorite}
+          style={{
+            position: 'absolute',
+            top: '0.5rem',
+            left: '0.5rem',
+            background: 'none',
+            border: 'none',
+            fontSize: '1.2rem',
+            cursor: 'pointer',
+            color: isFav ? '#FFD700' : '#ccc'
+          }}
+          title={isFav ? t('removeFavorite') : t('addFavorite')}
+        >
+          {isFav ? '★' : '☆'}
+        </button>
+      )}
+
+      {/* Admin delete button */}
       {user?.role === 'admin' && onDelete && (
         <button
           onClick={handleAdminDelete}
@@ -59,7 +122,9 @@ const Job = forwardRef(({ data, onDelete }, ref) => {
       {data.contract_type === 'studentJob' && (
         <>
           {data.schedule && <p><strong>{t('schedule')}:</strong> {data.schedule}</p>}
-          {data.days?.length > 0 && <p><strong>{t('days')}:</strong> {data.days.map(day => t(day)).join(', ')}</p>}
+          {data.days?.length > 0 && (
+            <p><strong>{t('days')}:</strong> {data.days.map(day => t(day)).join(', ')}</p>
+          )}
           {data.salary && <p><strong>{t('salary')}:</strong> {data.salary}</p>}
         </>
       )}
@@ -76,7 +141,7 @@ const Job = forwardRef(({ data, onDelete }, ref) => {
         <>
           {data.start_date && <p><strong>{t('startDate')}:</strong> {data.start_date}</p>}
           {data.end_date && <p><strong>{t('endDate')}:</strong> {data.end_date}</p>}
-          <p><strong>{t('fullTime')}:</strong> {data.full_time ? t('yes') : t('no')}</p>
+          <p><strong>{t('fullTime')}:</strong> {data.full_time ? t('yes') : t('no')}</p>}
         </>
       )}
 
