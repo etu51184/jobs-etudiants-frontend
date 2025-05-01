@@ -1,3 +1,5 @@
+/* src/components/Job.css */
+
 .job-card {
   background-color: #1f1f1f;
   color: #f1f1f1;
@@ -6,6 +8,7 @@
   margin-bottom: 1.5rem;
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
   transition: transform 0.2s ease, box-shadow 0.2s ease;
+  position: relative;
 }
 
 .job-card:hover {
@@ -13,7 +16,7 @@
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
 }
 
-.job-card h2 {
+.job-card h2.job-title {
   margin: 0 0 0.75rem;
   font-size: 1.5rem;
   color: #00cc66;
@@ -25,8 +28,74 @@
   line-height: 1.4;
 }
 
-.job-type {
-  font-style: italic;
+/* Favorite and delete buttons */
+.fav-btn,
+.del-btn {
+  position: absolute;
+  top: 0.5rem;
+  background: none;
+  border: none;
+  font-size: 1.2rem;
+  cursor: pointer;
   color: #ccc;
-  margin-bottom: 1rem;
+  transition: color 0.2s ease;
+}
+
+.fav-btn {
+  left: 0.5rem;
+}
+
+.del-btn {
+  right: 0.5rem;
+  color: #ff4d4f;
+}
+
+.fav-btn.fav-on {
+  color: #FFD700;
+}
+
+.fav-btn:hover,
+.del-btn:hover {
+  color: #fff;
+}
+
+/* Toggle details button */
+.toggle-details-btn {
+  background: none;
+  border: none;
+  color: #00cc66;
+  cursor: pointer;
+  margin-top: 0.5rem;
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  transition: color 0.2s ease;
+}
+
+.toggle-details-btn:hover {
+  color: #00b359;
+}
+
+/* Optional details section */
+.job-details {
+  margin-top: 0.75rem;
+  border-top: 1px solid #333;
+  padding-top: 0.75rem;
+}
+
+.job-details p {
+  margin: 0.4rem 0;
+}
+
+/* Responsive adjustments */
+@media (max-width: 600px) {
+  .job-card {
+    padding: 1rem;
+  }
+  .job-card h2.job-title {
+    font-size: 1.3rem;
+  }
+  .toggle-details-btn {
+    font-size: 0.85rem;
+  }
 }
