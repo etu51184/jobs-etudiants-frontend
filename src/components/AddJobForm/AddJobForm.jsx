@@ -9,11 +9,10 @@ import VolunteerFields from './VolunteerFields.jsx';
 import JobPreview from './JobPreview.jsx';
 import './AddJobForm.css';
 
-function AddJobForm({ onAdd }) {
-  const { user } = useAuth();
+export default function AddJobForm({ onAdd }) {
+  const { user, token } = useAuth();
   const { t } = useLang();
 
-  // contractType keys: studentJob, internship, contract, volunteer
   const [contractType, setContractType] = useState('studentJob');
   const [title, setTitle] = useState('');
   const [location, setLocation] = useState('');
@@ -43,15 +42,17 @@ function AddJobForm({ onAdd }) {
     setEndDate('');
     setFullTime(false);
     setExpiresInDays(30);
+    setMessage('');
+    setError('');
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!user) {
-      setError(t('mustLogin') || 'You must be logged in to post a job.');
+      setError(t('mustLogin'));
       return;
     }
-    if (!window.confirm(t('confirmPost') || 'Are you sure you want to post this job?')) return;
+    if (!window.confirm(t('confirmPost'))) return;
 
     const newJob = {
       title,
@@ -73,18 +74,31 @@ function AddJobForm({ onAdd }) {
     try {
       const res = await fetch(`${import.meta.env.VITE_API_URL}/api/jobs`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
         body: JSON.stringify(newJob)
       });
-      if (!res.ok) throw new Error('Network error');
+
+      if (res.status === 401) {
+        // non autorisé, redirection vers login
+        setError(t('mustLogin'));
+        return;
+      }
+
+      if (!res.ok) {
+        const err = await res.json();
+        throw new Error(err.error || t('postError'));
+      }
+
       const data = await res.json();
       onAdd?.(data);
-      setMessage(t('jobPosted') || 'Job posted successfully!');
-      setError('');
+      setMessage(t('jobPosted'));
       clearForm();
-    } catch {
-      setError(t('postError') || 'Error posting job.');
-      setMessage('');
+    } catch (err) {
+      console.error('Erreur création annonce :', err);
+      setError(err.message || t('postError'));
     }
   };
 
@@ -158,9 +172,23 @@ function AddJobForm({ onAdd }) {
 
       <button type="submit">{t('submitJob')}</button>
       {message && <p className="auth-message">{message}</p>}
-      {error && <p style={{ color: 'red', marginTop: '1rem' }}>{error}</p>}
+      {error && <p className="error" style={{ marginTop: '1rem' }}>{error}</p>}
+
+      {/* Aperçu de l'annonce en direct */}
+      <JobPreview
+        title={title}
+        location={location}
+        contract_type={contractType}
+        salary={salary}
+        contact={contact}
+        description={description}
+        days={days}
+        schedule={schedule}
+        duration={duration}
+        startDate={startDate}
+        endDate={endDate}
+        fullTime={fullTime}
+      />
     </form>
   );
 }
-
-export default AddJobForm;
