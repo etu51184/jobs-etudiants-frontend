@@ -1,15 +1,54 @@
-/* src/components/LanguageSwitcher.css */
-
-.lang-switcher {
-  background: none;
-  border: none;
-  color: #00cc66;
-  cursor: pointer;
-  font-size: 0.9rem;
-  padding: 0 0.5rem;
-  transition: text-decoration 0.3s ease;
+.lang-switcher-container {
+  position: relative;
+  display: inline-block;
 }
 
-.lang-switcher:hover {
-  text-decoration: underline;
+.lang-switcher-btn {
+  background-color: #2b2b2b;
+  border: 1px solid #444;
+  color: #eaeaea;
+  padding: 0.4rem 0.8rem;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: background-color 0.3s;
+}
+
+.lang-switcher-btn:hover {
+  background-color: #3a3a3a;
+}
+
+.lang-dropdown {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  background-color: #2b2b2b;
+  border: 1px solid #444;
+  border-radius: 5px;
+  margin-top: 0.3rem;
+  list-style: none;
+  padding: 0.5rem;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+  z-index: 1000;
+}
+
+.lang-option {
+  background: none;
+  border: none;
+  color: #eaeaea;
+  padding: 0.3rem 0.5rem;
+  cursor: pointer;
+  width: 100%;
+  text-align: left;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: background-color 0.3s;
+}
+
+.lang-option:hover {
+  background-color: #3a3a3a;
 }
