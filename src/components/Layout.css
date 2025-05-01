@@ -1,67 +1,54 @@
-/* Layout.css */
-
-/* Reset specific to layout */
-header {
-  background-color: #1e1e1e;
-  color: #ffffff;
-  padding: 1.5rem 2rem;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+.lang-switcher-container {
+  position: relative;
+  display: inline-block;
 }
 
-/* Navigation bar */
-nav {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-}
-
-nav a {
-  color: #f1f1f1;
-  text-decoration: none;
-  margin-right: 1rem;
-  font-weight: 500;
-  transition: color 0.3s ease;
-}
-
-nav a:hover {
-  color: #00cc66;
-  text-decoration: underline;
-}
-
-/* Logout and language switcher buttons styled like links */
-nav button,
-nav .lang-switcher {
-  background: none;
-  border: none;
-  color: #00cc66;
+.lang-switcher-btn {
+  background-color: #2b2b2b;
+  border: 1px solid #444;
+  color: #eaeaea;
+  padding: 0.4rem 0.8rem;
+  border-radius: 5px;
   cursor: pointer;
   font-size: 0.9rem;
-  padding: 0;
-  transition: text-decoration 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: background-color 0.3s;
 }
 
-nav button:hover,
-nav .lang-switcher:hover {
-  text-decoration: underline;
+.lang-switcher-btn:hover {
+  background-color: #3a3a3a;
 }
 
-/* Main and container adjustments */
-.container {
-  padding-top: 2rem;
+.lang-dropdown {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  background-color: #2b2b2b;
+  border: 1px solid #444;
+  border-radius: 5px;
+  margin-top: 0.3rem;
+  list-style: none;
+  padding: 0.5rem;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+  z-index: 1000;
 }
 
-main {
-  padding: 1rem 2rem;
+.lang-option {
+  background: none;
+  border: none;
+  color: #eaeaea;
+  padding: 0.3rem 0.5rem;
+  cursor: pointer;
+  width: 100%;
+  text-align: left;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: background-color 0.3s;
 }
 
-footer {
-  background-color: #1e1e1e;
-  color: #888;
-  text-align: center;
-  padding: 1rem;
-  margin-top: 2rem;
-  font-size: 0.9rem;
+.lang-option:hover {
+  background-color: #3a3a3a;
 }
