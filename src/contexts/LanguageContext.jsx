@@ -68,7 +68,12 @@ const translations = {
     // Filters & search
     searchPlaceholder: "Search jobs...",
     allTypes: "All types",
-    locationPlaceholder: "Filter by location"
+    locationPlaceholder: "Filter by location",
+    postedAt: "Posted At",
+    actions: "Actions",
+    view: "View",
+    profile: "Profile",
+    type: "Type"
   },
   fr: {
     welcome: "Annonces étudiantes disponibles",
@@ -137,7 +142,12 @@ const translations = {
     // Filters & search
     searchPlaceholder: "Recherche…",
     allTypes: "Tous types",
-    locationPlaceholder: "Filtrer par lieu"
+    locationPlaceholder: "Filtrer par lieu",
+    postedAt: "Date de publication",
+    actions: "Actions",
+    view: "Voir",
+    type: "Type",
+    profile: "Profil"
   },
   nl: {
     welcome: "Beschikbare studentenjobs",
@@ -206,7 +216,12 @@ const translations = {
     // Filters & search
     searchPlaceholder: "Zoeken…",
     allTypes: "Alle types",
-    locationPlaceholder: "Filter op locatie"
+    locationPlaceholder: "Filter op locatie",
+    postedAt: "Datum gepost",
+    actions: "Acties",
+    view: "Bekijken",
+    profile: "Profiel",
+    type: "Type"
   }
 };
 
