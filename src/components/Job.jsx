@@ -35,22 +35,27 @@ const Job = forwardRef(({ data, onDelete }, ref) => {
     if (user && token) {
       fetch(`${import.meta.env.VITE_API_URL}/api/favorites/${data.id}`, {
         method: 'GET',
-        headers: { Authorization: `Bearer ${token}` }
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
       })
-        .then(res => res.json())
-        .then(({ isFavorite }) => {
-          if (typeof isFavorite === 'boolean') {
-            setIsFav(isFavorite);
-          }
+        .then(res => {
+          if (!res.ok) throw new Error('Not authorized');
+          return res.json();
         })
-        .catch(() => {});
+        .then(({ isFavorite }) => {
+          setIsFav(Boolean(isFavorite));
+        })
+        .catch(() => {
+          setIsFav(false);
+        });
     }
   }, [user, token, data.id]);
 
   // Toggle favorite
   const toggleFavorite = async (e) => {
     e.stopPropagation();
-    if (!user) {
+    if (!user || !token) {
       alert(t('mustLogin'));
       return;
     }
@@ -58,13 +63,20 @@ const Job = forwardRef(({ data, onDelete }, ref) => {
     try {
       const res = await fetch(
         `${import.meta.env.VITE_API_URL}/api/favorites/${data.id}`,
-        { method, headers: { Authorization: `Bearer ${token}` } }
+        {
+          method,
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        }
       );
       if (res.ok) {
         setIsFav(prev => !prev);
+      } else if (res.status === 401) {
+        alert(t('mustLogin'));
       }
-    } catch {
-      // ignore errors
+    } catch (err) {
+      console.error('Error toggling favorite:', err);
     }
   };
 
