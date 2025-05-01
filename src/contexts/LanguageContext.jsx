@@ -73,7 +73,14 @@ const translations = {
     actions: "Actions",
     view: "View",
     profile: "Profile",
-    type: "Type"
+    type: "Type",
+    history:      "My Job History",
+    favorites:    "Favorites",
+    noFavorites:  "No saved favorites.",
+    customFields: "Custom Fields",
+    fieldLabel: "Field Label",
+    fieldValue: "Field Value",
+    addField: "Add Field"
   },
   fr: {
     welcome: "Annonces étudiantes disponibles",
@@ -147,7 +154,13 @@ const translations = {
     actions: "Actions",
     view: "Voir",
     type: "Type",
-    profile: "Profil"
+    profile: "Profil",
+    history: "Historique des annonces",
+    favorites: "Favoris",
+    noFavorites: "Aucun favori enregistré.",
+    fieldLabel: "Nom du champ",
+    fieldValue: "Valeur du champ",
+    addField: "Ajouter un champ"
   },
   nl: {
     welcome: "Beschikbare studentenjobs",
@@ -221,7 +234,14 @@ const translations = {
     actions: "Acties",
     view: "Bekijken",
     profile: "Profiel",
-    type: "Type"
+    type: "Type",
+    history:      "Geschiedenis",
+    favorites:    "Favorieten",
+    noFavorites:  "Geen favorieten opgeslagen.",
+    customFields: "Aangepaste velden",
+    fieldLabel: "Veldlabel",
+    fieldValue: "Veldwaarde",
+    addField: "Veld toevoegen"
   }
 };
 

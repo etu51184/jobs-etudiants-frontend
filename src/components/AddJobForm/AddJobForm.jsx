@@ -1,3 +1,5 @@
+// src/components/AddJobForm.jsx
+
 import React, { useState } from 'react';
 import { useAuth } from '../../contexts/AuthContext.jsx';
 import { useLang } from '../../contexts/LanguageContext.jsx';
@@ -13,12 +15,13 @@ export default function AddJobForm({ onAdd }) {
   const { user, token } = useAuth();
   const { t } = useLang();
 
+  // États standards
   const [contractType, setContractType] = useState('studentJob');
   const [title, setTitle] = useState('');
   const [location, setLocation] = useState('');
-  const [salary, setSalary] = useState('');
-  const [description, setDescription] = useState('');
   const [contact, setContact] = useState('');
+  const [description, setDescription] = useState('');
+  const [salary, setSalary] = useState('');
   const [days, setDays] = useState([]);
   const [schedule, setSchedule] = useState('');
   const [duration, setDuration] = useState('');
@@ -29,12 +32,31 @@ export default function AddJobForm({ onAdd }) {
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
 
+  // Champs personnalisés dynamiques
+  const [customFields, setCustomFields] = useState([]);
+
+  const addCustomField = () => {
+    setCustomFields(prev => [...prev, { label: '', value: '' }]);
+  };
+
+  const updateCustomField = (index, key, val) => {
+    setCustomFields(prev =>
+      prev.map((field, i) =>
+        i === index ? { ...field, [key]: val } : field
+      )
+    );
+  };
+
+  const removeCustomField = (index) => {
+    setCustomFields(prev => prev.filter((_, i) => i !== index));
+  };
+
   const clearForm = () => {
     setTitle('');
     setLocation('');
-    setSalary('');
-    setDescription('');
     setContact('');
+    setDescription('');
+    setSalary('');
     setDays([]);
     setSchedule('');
     setDuration('');
@@ -42,6 +64,7 @@ export default function AddJobForm({ onAdd }) {
     setEndDate('');
     setFullTime(false);
     setExpiresInDays(30);
+    setCustomFields([]);
     setMessage('');
     setError('');
   };
@@ -54,20 +77,22 @@ export default function AddJobForm({ onAdd }) {
     }
     if (!window.confirm(t('confirmPost'))) return;
 
+    const filteredCustom = customFields.filter(f => f.label.trim() && f.value.trim());
     const newJob = {
       title,
       description,
       contract_type: contractType,
       location,
+      contact,
       schedule,
       days,
       salary,
-      contact,
       duration,
       start_date: startDate,
       end_date: endDate,
       full_time: fullTime,
       expires_in_days: expiresInDays,
+      custom_fields: filteredCustom,
       email: user.email
     };
 
@@ -82,11 +107,9 @@ export default function AddJobForm({ onAdd }) {
       });
 
       if (res.status === 401) {
-        // non autorisé, redirection vers login
         setError(t('mustLogin'));
         return;
       }
-
       if (!res.ok) {
         const err = await res.json();
         throw new Error(err.error || t('postError'));
@@ -112,27 +135,27 @@ export default function AddJobForm({ onAdd }) {
         type="text"
         placeholder={t('jobTitle')}
         value={title}
-        onChange={(e) => setTitle(e.target.value)}
+        onChange={e => setTitle(e.target.value)}
         required
       />
       <input
         type="text"
         placeholder={t('location')}
         value={location}
-        onChange={(e) => setLocation(e.target.value)}
+        onChange={e => setLocation(e.target.value)}
         required
       />
       <textarea
         placeholder={t('description')}
         value={description}
-        onChange={(e) => setDescription(e.target.value)}
+        onChange={e => setDescription(e.target.value)}
         required
       />
       <input
         type="text"
         placeholder={t('contact')}
         value={contact}
-        onChange={(e) => setContact(e.target.value)}
+        onChange={e => setContact(e.target.value)}
         required
       />
 
@@ -166,28 +189,54 @@ export default function AddJobForm({ onAdd }) {
         max="30"
         placeholder={t('expiresInDays')}
         value={expiresInDays}
-        onChange={(e) => setExpiresInDays(Number(e.target.value))}
+        onChange={e => setExpiresInDays(Number(e.target.value))}
         required
       />
+
+      {/* Champs personnalisés */}
+      <div className="custom-fields">
+        <h4>{t('customFields')}</h4>
+        {customFields.map((f, i) => (
+          <div key={i} className="field-row">
+            <input
+              type="text"
+              placeholder={t('fieldLabel')}
+              value={f.label}
+              onChange={e => updateCustomField(i, 'label', e.target.value)}
+            />
+            <input
+              type="text"
+              placeholder={t('fieldValue')}
+              value={f.value}
+              onChange={e => updateCustomField(i, 'value', e.target.value)}
+            />
+            <button type="button" onClick={() => removeCustomField(i)}>×</button>
+          </div>
+        ))}
+        <button type="button" className="btn-add-field" onClick={addCustomField}>
+          + {t('addField')}
+        </button>
+      </div>
 
       <button type="submit">{t('submitJob')}</button>
       {message && <p className="auth-message">{message}</p>}
       {error && <p className="error" style={{ marginTop: '1rem' }}>{error}</p>}
 
-      {/* Aperçu de l'annonce en direct */}
+      {/* Aperçu live */}
       <JobPreview
         title={title}
         location={location}
         contract_type={contractType}
-        salary={salary}
         contact={contact}
         description={description}
+        salary={salary}
         days={days}
         schedule={schedule}
         duration={duration}
         startDate={startDate}
         endDate={endDate}
         fullTime={fullTime}
+        custom_fields={customFields}
       />
     </form>
   );

@@ -1,3 +1,5 @@
+// src/pages/Profile.jsx
+
 import React, { useEffect, useState } from 'react';
 import { useNavigate }         from 'react-router-dom';
 import { useAuth }             from '../contexts/AuthContext.jsx';
@@ -7,8 +9,7 @@ import './Profile.css';
 
 export default function Profile() {
   const { t }       = useLang();
-  const { user,
-          token }   = useAuth();
+  const { user, token } = useAuth();
   const navigate     = useNavigate();
 
   const [jobs, setJobs]               = useState([]);
@@ -75,77 +76,82 @@ export default function Profile() {
   };
 
   return (
-    <div className="container">
-      <h2>{t('profile')}</h2>
+    <div className="container profile-page">
+      <h2 className="page-title">{t('profile')}</h2>
 
       {/* Historique des annonces */}
-      <section>
-        <h3>{t('history')}</h3>
-        {loadingJobs ? (
-          <p>{t('loading')}</p>
-        ) : jobs.length === 0 ? (
-          <p>{t('noJobs')}</p>
-        ) : (
-          <table className="history-table">
-            <thead>
-              <tr>
-                <th>{t('jobTitle')}</th>
-                <th>{t('type')}</th>
-                <th>{t('location')}</th>
-                <th>{t('postedAt')}</th>
-                <th>{t('actions')}</th>
-              </tr>
-            </thead>
-            <tbody>
-              {jobs.map(job => (
-                <tr key={job.id}>
-                  <td>{job.title}</td>
-                  <td>{t(job.contract_type)}</td>
-                  <td>{job.location}</td>
-                  <td>
-                    {job.posted_at
-                      ? new Date(job.posted_at).toLocaleDateString('fr-FR')
-                      : '--'}
-                  </td>
-                  <td>
-                    <button onClick={() => navigate(`/job/${job.id}`)}>
-                      {t('view')}
-                    </button>
-                    <button
-                      onClick={() => handleDelete(job.id)}
-                      className="btn-delete"
-                    >
-                      {t('delete')}
-                    </button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        )}
+      <section className="history-section">
+        <h3 className="section-title">{t('history')}</h3>
+        {loadingJobs
+          ? <p>{t('loading')}</p>
+          : jobs.length === 0
+            ? <p>{t('noJobs')}</p>
+            : (
+              <table className="history-table">
+                <thead>
+                  <tr>
+                    <th>{t('jobTitle')}</th>
+                    <th>{t('type')}</th>
+                    <th>{t('location')}</th>
+                    <th>{t('postedAt')}</th>
+                    <th>{t('actions')}</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {jobs.map(job => (
+                    <tr key={job.id}>
+                      <td>{job.title}</td>
+                      <td>{t(job.contract_type)}</td>
+                      <td>{job.location}</td>
+                      <td>
+                        {job.posted_at
+                          ? new Date(job.posted_at).toLocaleDateString()
+                          : '--'}
+                      </td>
+                      <td>
+                        <button
+                          className="btn btn-view"
+                          onClick={() => navigate(`/job/${job.id}`)}
+                        >
+                          {t('view')}
+                        </button>
+                        <button
+                          className="btn btn-delete"
+                          onClick={() => handleDelete(job.id)}
+                        >
+                          {t('delete')}
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            )
+        }
       </section>
 
       {/* Favoris */}
-      <section style={{ marginTop: '2rem' }}>
-        <h3>{t('favorites')}</h3>
-        {loadingFavs ? (
-          <p>{t('loading')}</p>
-        ) : favorites.length === 0 ? (
-          <p>{t('noFavorites')}</p>
-        ) : (
-          <ul className="fav-list">
-            {favorites.map(job => (
-              <li key={job.job_id}>
-                <a href={`/job/${job.job_id}`}>
-                  {job.title} ({job.location})
-                </a>
-              </li>
-            ))}
-          </ul>
-        )}
+      <section className="favorites-section">
+        <h3 className="section-title">{t('favorites')}</h3>
+        {loadingFavs
+          ? <p>{t('loading')}</p>
+          : favorites.length === 0
+            ? <p>{t('noFavorites')}</p>
+            : (
+              <ul className="fav-list">
+                {favorites.map(job => (
+                  <li key={job.job_id} className="fav-item">
+                    <a href={`/job/${job.job_id}`} className="fav-link">
+                      {job.title} ({job.location})
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            )
+        }
       </section>
 
-      {error && <p className="error" style={{ marginTop: '1rem' }}>{error}</p>}
+      {error && <p className="error-message">{error}</p>}
     </div>
   );
 }
