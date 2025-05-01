@@ -1,5 +1,3 @@
-// src/components/Job.jsx
-
 import React, { forwardRef, useState, useEffect } from 'react';
 import './Job.css';
 import { useNavigate } from 'react-router-dom';
@@ -7,30 +5,28 @@ import { useLang } from '../contexts/LanguageContext.jsx';
 import { useAuth } from '../contexts/AuthContext.jsx';
 
 /**
- * Job card component that shows job details, allows users to favorite jobs,
- * and—for admins—a delete button to remove any job directly from the list.
- * Supports forwarding ref for infinite scroll observer.
+ * Job card component: affiche les détails, permet de mettre en favoris
+ * et pour les admins de supprimer.
+ * Supporte forwardRef pour scroll infini.
  */
 const Job = forwardRef(({ data, onDelete }, ref) => {
   const navigate = useNavigate();
-  const { t } = useLang();
+  const { t }    = useLang();
   const { user, token } = useAuth();
   const [isFav, setIsFav] = useState(false);
 
-  // Navigate to job detail
-  const handleClick = () => {
-    navigate(`/job/${data.id}`);
-  };
+  // Aller au détail
+  const handleClick = () => navigate(`/job/${data.id}`);
 
-  // Admin delete
-  const handleAdminDelete = (e) => {
+  // Suppression admin
+  const handleAdminDelete = e => {
     e.stopPropagation();
     if (onDelete && window.confirm(t('confirmDelete'))) {
       onDelete(data.id);
     }
   };
 
-  // Fetch favorite status for this job
+  // Récupérer l’état favori
   useEffect(() => {
     if (user && token) {
       fetch(`${import.meta.env.VITE_API_URL}/api/favorites/${data.id}`, {
@@ -43,17 +39,13 @@ const Job = forwardRef(({ data, onDelete }, ref) => {
           if (!res.ok) throw new Error('Not authorized');
           return res.json();
         })
-        .then(({ isFavorite }) => {
-          setIsFav(Boolean(isFavorite));
-        })
-        .catch(() => {
-          setIsFav(false);
-        });
+        .then(({ isFavorite }) => setIsFav(Boolean(isFavorite)))
+        .catch(() => setIsFav(false));
     }
   }, [user, token, data.id]);
 
-  // Toggle favorite
-  const toggleFavorite = async (e) => {
+  // Basculer favori
+  const toggleFavorite = async e => {
     e.stopPropagation();
     if (!user || !token) {
       alert(t('mustLogin'));
@@ -87,7 +79,7 @@ const Job = forwardRef(({ data, onDelete }, ref) => {
       onClick={handleClick}
       style={{ cursor: 'pointer', position: 'relative' }}
     >
-      {/* Favorite toggle */}
+      {/* Bouton favori */}
       {user && (
         <button
           onClick={toggleFavorite}
@@ -107,7 +99,7 @@ const Job = forwardRef(({ data, onDelete }, ref) => {
         </button>
       )}
 
-      {/* Admin delete button */}
+      {/* Suppression admin */}
       {user?.role === 'admin' && onDelete && (
         <button
           onClick={handleAdminDelete}
@@ -153,7 +145,7 @@ const Job = forwardRef(({ data, onDelete }, ref) => {
         <>
           {data.start_date && <p><strong>{t('startDate')}:</strong> {data.start_date}</p>}
           {data.end_date && <p><strong>{t('endDate')}:</strong> {data.end_date}</p>}
-          <p><strong>{t('fullTime')}:</strong> {data.full_time ? t('yes') : t('no')}</p>}
+          <p><strong>{t('fullTime')}:</strong> {data.full_time ? t('yes') : t('no')}</p>
         </>
       )}
 

@@ -1,11 +1,9 @@
-// src/pages/Profile.jsx
-
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext.jsx';
 import { useLang } from '../contexts/LanguageContext.jsx';
 import '../App.css';
-import './Profile.css'; // Assure-toi d’ajouter les styles pour history-table et fav-list
+import './Profile.css';
 
 export default function Profile() {
   const { t } = useLang();
@@ -28,7 +26,9 @@ export default function Profile() {
     if (!user) return;
     setLoadingJobs(true);
     fetch(`${import.meta.env.VITE_API_URL}/api/jobs/me`, {
-      headers: { Authorization: `Bearer ${token}` }
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
     })
       .then(res => {
         if (res.status === 401) throw new Error(t('mustLogin'));
@@ -45,7 +45,9 @@ export default function Profile() {
     if (!user) return;
     setLoadingFavs(true);
     fetch(`${import.meta.env.VITE_API_URL}/api/favorites`, {
-      headers: { Authorization: `Bearer ${token}` }
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
     })
       .then(res => {
         if (res.status === 401) throw new Error(t('mustLogin'));
@@ -64,13 +66,12 @@ export default function Profile() {
       method: 'DELETE',
       headers: {
         'Content-Type': 'application/json',
-        Authorization: `Bearer ${token}`
+        'Authorization': `Bearer ${token}`
       }
     })
       .then(res => {
         if (res.status === 401) throw new Error(t('mustLogin'));
         if (!res.ok) return res.json().then(e => Promise.reject(e.error));
-        // retirer de la liste
         setJobs(js => js.filter(j => j.id !== id));
       })
       .catch(err => setError(err.message || t('deleteError')));
@@ -82,7 +83,7 @@ export default function Profile() {
 
       {/* Historique des annonces */}
       <section>
-        <h3>{t('history') || 'Historique de mes annonces'}</h3>
+        <h3>{t('history')}</h3>
         {loadingJobs ? (
           <p>{t('loading')}</p>
         ) : jobs.length === 0 ? (
