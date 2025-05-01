@@ -1,20 +1,21 @@
 import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../contexts/AuthContext.jsx';
-import { useLang } from '../contexts/LanguageContext.jsx';
+import { useNavigate }         from 'react-router-dom';
+import { useAuth }             from '../contexts/AuthContext.jsx';
+import { useLang }             from '../contexts/LanguageContext.jsx';
 import '../App.css';
 import './Profile.css';
 
 export default function Profile() {
-  const { t } = useLang();
-  const { user, token } = useAuth();
-  const navigate = useNavigate();
+  const { t }       = useLang();
+  const { user,
+          token }   = useAuth();
+  const navigate     = useNavigate();
 
-  const [jobs, setJobs] = useState([]);
-  const [favorites, setFavorites] = useState([]);
+  const [jobs, setJobs]               = useState([]);
+  const [favorites, setFavorites]     = useState([]);
   const [loadingJobs, setLoadingJobs] = useState(false);
   const [loadingFavs, setLoadingFavs] = useState(false);
-  const [error, setError] = useState('');
+  const [error, setError]             = useState('');
 
   // Redirection si non connecté
   useEffect(() => {
@@ -23,12 +24,10 @@ export default function Profile() {
 
   // Charger mes annonces
   useEffect(() => {
-    if (!user) return;
+    if (!user || !token) return;
     setLoadingJobs(true);
     fetch(`${import.meta.env.VITE_API_URL}/api/jobs/me`, {
-      headers: {
-        'Authorization': `Bearer ${token}`
-      }
+      headers: { 'Authorization': `Bearer ${token}` }
     })
       .then(res => {
         if (res.status === 401) throw new Error(t('mustLogin'));
@@ -42,12 +41,10 @@ export default function Profile() {
 
   // Charger mes favoris
   useEffect(() => {
-    if (!user) return;
+    if (!user || !token) return;
     setLoadingFavs(true);
     fetch(`${import.meta.env.VITE_API_URL}/api/favorites`, {
-      headers: {
-        'Authorization': `Bearer ${token}`
-      }
+      headers: { 'Authorization': `Bearer ${token}` }
     })
       .then(res => {
         if (res.status === 401) throw new Error(t('mustLogin'));
@@ -60,12 +57,12 @@ export default function Profile() {
   }, [user, token, t, navigate]);
 
   // Supprimer une annonce
-  const handleDelete = id => {
+  const handleDelete = (id) => {
     if (!window.confirm(t('confirmDelete'))) return;
     fetch(`${import.meta.env.VITE_API_URL}/api/jobs/${id}`, {
       method: 'DELETE',
       headers: {
-        'Content-Type': 'application/json',
+        'Content-Type':  'application/json',
         'Authorization': `Bearer ${token}`
       }
     })

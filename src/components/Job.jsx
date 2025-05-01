@@ -1,13 +1,14 @@
+// src/components/Job.jsx
+
 import React, { forwardRef, useState, useEffect } from 'react';
 import './Job.css';
 import { useNavigate } from 'react-router-dom';
-import { useLang } from '../contexts/LanguageContext.jsx';
-import { useAuth } from '../contexts/AuthContext.jsx';
+import { useLang }     from '../contexts/LanguageContext.jsx';
+import { useAuth }     from '../contexts/AuthContext.jsx';
 
 /**
- * Job card component: affiche les détails, permet de mettre en favoris
- * et pour les admins de supprimer.
- * Supporte forwardRef pour scroll infini.
+ * Job card component that shows job details, lets users favorite jobs,
+ * and—for admins—a delete button. Supports forwarding ref for infinite scroll.
  */
 const Job = forwardRef(({ data, onDelete }, ref) => {
   const navigate = useNavigate();
@@ -15,10 +16,10 @@ const Job = forwardRef(({ data, onDelete }, ref) => {
   const { user, token } = useAuth();
   const [isFav, setIsFav] = useState(false);
 
-  // Aller au détail
+  // Go to job detail
   const handleClick = () => navigate(`/job/${data.id}`);
 
-  // Suppression admin
+  // Admin delete
   const handleAdminDelete = e => {
     e.stopPropagation();
     if (onDelete && window.confirm(t('confirmDelete'))) {
@@ -26,14 +27,12 @@ const Job = forwardRef(({ data, onDelete }, ref) => {
     }
   };
 
-  // Récupérer l’état favori
+  // Fetch favorite status
   useEffect(() => {
     if (user && token) {
       fetch(`${import.meta.env.VITE_API_URL}/api/favorites/${data.id}`, {
         method: 'GET',
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
+        headers: { 'Authorization': `Bearer ${token}` }
       })
         .then(res => {
           if (!res.ok) throw new Error('Not authorized');
@@ -44,7 +43,7 @@ const Job = forwardRef(({ data, onDelete }, ref) => {
     }
   }, [user, token, data.id]);
 
-  // Basculer favori
+  // Toggle favorite
   const toggleFavorite = async e => {
     e.stopPropagation();
     if (!user || !token) {
@@ -57,16 +56,11 @@ const Job = forwardRef(({ data, onDelete }, ref) => {
         `${import.meta.env.VITE_API_URL}/api/favorites/${data.id}`,
         {
           method,
-          headers: {
-            'Authorization': `Bearer ${token}`
-          }
+          headers: { 'Authorization': `Bearer ${token}` }
         }
       );
-      if (res.ok) {
-        setIsFav(prev => !prev);
-      } else if (res.status === 401) {
-        alert(t('mustLogin'));
-      }
+      if (res.ok) setIsFav(prev => !prev);
+      else if (res.status === 401) alert(t('mustLogin'));
     } catch (err) {
       console.error('Error toggling favorite:', err);
     }
@@ -79,7 +73,7 @@ const Job = forwardRef(({ data, onDelete }, ref) => {
       onClick={handleClick}
       style={{ cursor: 'pointer', position: 'relative' }}
     >
-      {/* Bouton favori */}
+      {/* Favorite toggle */}
       {user && (
         <button
           onClick={toggleFavorite}
@@ -99,7 +93,7 @@ const Job = forwardRef(({ data, onDelete }, ref) => {
         </button>
       )}
 
-      {/* Suppression admin */}
+      {/* Admin delete */}
       {user?.role === 'admin' && onDelete && (
         <button
           onClick={handleAdminDelete}
@@ -127,7 +121,7 @@ const Job = forwardRef(({ data, onDelete }, ref) => {
         <>
           {data.schedule && <p><strong>{t('schedule')}:</strong> {data.schedule}</p>}
           {data.days?.length > 0 && (
-            <p><strong>{t('days')}:</strong> {data.days.map(day => t(day)).join(', ')}</p>
+            <p><strong>{t('days')}:</strong> {data.days.map(d => t(d)).join(', ')}</p>
           )}
           {data.salary && <p><strong>{t('salary')}:</strong> {data.salary}</p>}
         </>
@@ -144,14 +138,14 @@ const Job = forwardRef(({ data, onDelete }, ref) => {
       {data.contract_type === 'contract' && (
         <>
           {data.start_date && <p><strong>{t('startDate')}:</strong> {data.start_date}</p>}
-          {data.end_date && <p><strong>{t('endDate')}:</strong> {data.end_date}</p>}
+          {data.end_date   && <p><strong>{t('endDate')}:</strong> {data.end_date}</p>}
           <p><strong>{t('fullTime')}:</strong> {data.full_time ? t('yes') : t('no')}</p>
         </>
       )}
 
       {data.contract_type === 'volunteer' && (
         <>
-          {data.contact && <p><strong>{t('contact')}:</strong> {data.contact}</p>}
+          {data.contact  && <p><strong>{t('contact')}:</strong> {data.contact}</p>}
           {data.schedule && <p><strong>{t('schedule')}:</strong> {data.schedule}</p>}
         </>
       )}
