@@ -20,7 +20,7 @@ const Layout = () => {
       <nav>
         <Link to="/">{t("home")}</Link>
         <Link to="/add-job">{t("postJob")}</Link>
-        {user && <Link to="/profile">{t('home')} Profile</Link>}
+        {user && <Link to="/profile">{t('profile')}</Link>}
         {!user && <Link to="/login">{t("login")}</Link>}
         {user && user.role === "admin" && <Link to="/admin/users">{t("userList")}</Link>}
         {user && (

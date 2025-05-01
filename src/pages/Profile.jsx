@@ -1,10 +1,9 @@
 // src/pages/Profile.jsx
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import Job from '../components/Job.jsx';
 import { useAuth } from '../contexts/AuthContext.jsx';
 import { useLang } from '../contexts/LanguageContext.jsx';
-import '../App.css';
+import './Profile.css';
 
 export default function Profile() {
   const { t } = useLang();
@@ -27,10 +26,9 @@ export default function Profile() {
       setLoading(true);
       setError('');
       try {
-        const res = await fetch(
-          `${import.meta.env.VITE_API_URL}/api/jobs/me`,
-          { headers: { Authorization: `Bearer ${token}` } }
-        );
+        const res = await fetch(`${import.meta.env.VITE_API_URL}/api/jobs/me`, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
         if (!res.ok) {
           const err = await res.json();
           throw new Error(err.error || t('errorLoadingJobs'));
@@ -47,20 +45,17 @@ export default function Profile() {
     fetchMyJobs();
   }, [user, token, t]);
 
-  // Supprimer une de mes annonces
+  // Supprimer une annonce
   const handleDelete = async (id) => {
     if (!window.confirm(t('confirmDelete'))) return;
     try {
-      const res = await fetch(
-        `${import.meta.env.VITE_API_URL}/api/jobs/${id}`,
-        {
-          method: 'DELETE',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`
-          }
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/jobs/${id}`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`
         }
-      );
+      });
       if (!res.ok) {
         const err = await res.json();
         throw new Error(err.error || t('deleteError'));
@@ -74,19 +69,53 @@ export default function Profile() {
 
   return (
     <div className="container">
-      <h2>{t('profile')} – {user?.username}</h2>
+      <h2>{t('profile')}</h2>
+
+      <h3>Historique de mes annonces</h3>
 
       {loading && <p>{t('loading')}</p>}
       {error && <p className="error">{error}</p>}
-      {!loading && jobs.length === 0 && <p>{t('noJobs')}</p>}
 
-      {jobs.map(job => (
-        <Job
-          key={job.id}
-          data={job}
-          onDelete={() => handleDelete(job.id)}
-        />
-      ))}
+      {!loading && jobs.length === 0 && <p>Aucune annonce publiée.</p>}
+
+      {!loading && jobs.length > 0 && (
+        <table className="history-table">
+          <thead>
+            <tr>
+              <th>{t('jobTitle')}</th>
+              <th>{t('type')}</th>
+              <th>{t('location')}</th>
+              <th>Date</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {jobs.map(job => (
+              <tr key={job.id}>
+                <td>{job.title}</td>
+                <td>{t(job.contract_type)}</td>
+                <td>{job.location}</td>
+                <td>
+                  {job.created_at
+                    ? new Date(job.created_at).toLocaleDateString('fr-FR', {
+                        year: 'numeric', month: '2-digit', day: '2-digit'
+                      })
+                    : '--'}
+                </td>
+                <td>
+                  <button onClick={() => navigate(`/job/${job.id}`)}>Voir</button>
+                  <button
+                    onClick={() => handleDelete(job.id)}
+                    style={{ marginLeft: '0.5rem', color: '#ff4d4f' }}
+                  >
+                    {t('delete')}
+                  </button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      )}
     </div>
   );
 }
