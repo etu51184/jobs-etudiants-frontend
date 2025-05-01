@@ -80,7 +80,13 @@ const translations = {
     customFields: "Custom Fields",
     fieldLabel: "Field Label",
     fieldValue: "Field Value",
-    addField: "Add Field"
+    addField: "Add Field",
+    requiredFields:    "Required Fields",
+    optionalFields:    "Optional Fields",
+    showOptional:      "Show options",
+    hideOptional:      "Hide options",
+    showMore:          "Show more",
+    showLess:          "Show less"
   },
   fr: {
     welcome: "Annonces étudiantes disponibles",
@@ -160,7 +166,14 @@ const translations = {
     noFavorites: "Aucun favori enregistré.",
     fieldLabel: "Nom du champ",
     fieldValue: "Valeur du champ",
-    addField: "Ajouter un champ"
+    addField: "Ajouter un champ",
+    requiredFields:    "Champs obligatoires",
+    optionalFields:    "Champs facultatifs",
+    showOptional:      "Afficher options",
+    hideOptional:      "Masquer options",
+    // Détails
+    showMore:          "Afficher plus",
+    showLess:          "Réduire"
   },
   nl: {
     welcome: "Beschikbare studentenjobs",
@@ -241,7 +254,14 @@ const translations = {
     customFields: "Aangepaste velden",
     fieldLabel: "Veldlabel",
     fieldValue: "Veldwaarde",
-    addField: "Veld toevoegen"
+    addField: "Veld toevoegen",
+     requiredFields:    "Verplichte velden",
+    optionalFields:    "Optionele velden",
+    showOptional:      "Opties weergeven",
+    hideOptional:      "Opties verbergen",
+    // Details
+    showMore:          "Meer weergeven",
+    showLess:          "Minder weergeven"
   }
 };
 
