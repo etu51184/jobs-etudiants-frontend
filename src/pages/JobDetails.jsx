@@ -5,7 +5,7 @@ import { useAuth } from '../contexts/AuthContext.jsx';
 import { useLang } from '../contexts/LanguageContext.jsx';
 import '../App.css';
 
-function JobDetails() {
+export default function JobDetails() {
   const { id } = useParams();
   const navigate = useNavigate();
   const { user, token } = useAuth();
@@ -49,11 +49,8 @@ function JobDetails() {
         `${import.meta.env.VITE_API_URL}/api/favorites/${id}`,
         { method, headers: { 'Authorization': `Bearer ${token}` } }
       );
-      if (res.ok) {
-        setIsFav(f => !f);
-      } else if (res.status === 401) {
-        alert(t('mustLogin'));
-      }
+      if (res.ok) setIsFav(f => !f);
+      else if (res.status === 401) alert(t('mustLogin'));
     } catch {
       alert(t('errorOccurred'));
     }
@@ -90,6 +87,8 @@ function JobDetails() {
   const isOwner = user && job.created_by === user.email;
   const isAdmin = user && user.role === 'admin';
   const canDelete = isOwner || isAdmin;
+  // Assurer que custom_fields est un array
+  const cfArray = Array.isArray(job.custom_fields) ? job.custom_fields : [];
 
   return (
     <div className="container job-details-page">
@@ -126,12 +125,10 @@ function JobDetails() {
         )}
         <p><strong>{t('contact')}:</strong> {job.contact}</p>
         <p style={{ marginTop: '1rem' }}>{job.description}</p>
-        {job.custom_fields?.map((f, i) => (
+        {cfArray.length > 0 && cfArray.map((f, i) => (
           <p key={i}><strong>{f.label}:</strong> {f.value}</p>
         ))}
       </div>
     </div>
   );
 }
-
-export default JobDetails;
