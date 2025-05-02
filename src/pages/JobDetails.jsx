@@ -26,7 +26,7 @@ export default function JobDetails() {
       .catch(err => setError(err.message));
   }, [id, t]);
 
-  // Favori
+  // Statut favori
   useEffect(() => {
     if (!user || !token) return;
     fetch(`${import.meta.env.VITE_API_URL}/api/favorites/${id}`, {
@@ -57,15 +57,10 @@ export default function JobDetails() {
     if (!user) return alert(t('mustLogin'));
     if (!window.confirm(t('confirmDelete'))) return;
     try {
-      const res = await fetch(
-        `${import.meta.env.VITE_API_URL}/api/jobs/${id}`,
-        {
-          method: 'DELETE',
-          headers: {
-            'Authorization': `Bearer ${token}`
-          }
-        }
-      );
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/jobs/${id}`, {
+        method: 'DELETE',
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
       const data = await res.json();
       if (data.error) throw new Error(data.error);
       alert(t('deleteSuccess'));
@@ -87,10 +82,9 @@ export default function JobDetails() {
 
   return (
     <div className="container job-details-page">
-      {/* Header actions */}
       <div className="details-header">
         <button onClick={() => navigate('/')} className="back-button">
-          ← {t('backToList')}
+          {t('backToList')}
         </button>
         <div className="header-actions">
           {user && (
@@ -100,24 +94,20 @@ export default function JobDetails() {
           )}
           {canDelete && (
             <button onClick={handleDelete} className="delete-button">
-              🗑 {t('delete')}
+              {t('delete')}
             </button>
           )}
         </div>
       </div>
 
-      {/* Main card */}
       <div className="job-card">
         <h2>{job.title}</h2>
-
-        {/* Métadonnées */}
         <div className="meta-row">
-          <p><span className="icon">💼</span>{t(job.contract_type)}</p>
-          <p><span className="icon">📍</span>{job.location}</p>
-          <p><span className="icon">✉️</span>{job.contact}</p>
+          <p><strong>{t('type')}:</strong> {t(job.contract_type)}</p>
+          <p><strong>{t('location')}:</strong> {job.location}</p>
+          <p><strong>{t('contact')}:</strong> {job.contact}</p>
         </div>
 
-        {/* Détails supplémentaires */}
         <div className="details-grid">
           {job.schedule && <p><strong>{t('schedule')}:</strong> {job.schedule}</p>}
           {daysArray.length > 0 && <p><strong>{t('days')}:</strong> {daysArray.map(d => t(d)).join(', ')}</p>}
@@ -129,7 +119,6 @@ export default function JobDetails() {
           {cfArray.map((f, i) => <p key={i}><strong>{f.label}:</strong> {f.value}</p>)}
         </div>
 
-        {/* Description */}
         {job.description && (
           <div className="description">
             <h3>{t('description')}</h3>
