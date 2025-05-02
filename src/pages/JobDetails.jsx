@@ -15,18 +15,13 @@ export default function JobDetails() {
   const [error, setError] = useState('');
   const [isFav, setIsFav] = useState(false);
 
-  // Charger l'annonce
   useEffect(() => {
     fetch(`${import.meta.env.VITE_API_URL}/api/jobs/${id}`)
-      .then(res => {
-        if (!res.ok) throw new Error(t('errorJobNotFound'));
-        return res.json();
-      })
+      .then(res => res.ok ? res.json() : Promise.reject(t('errorJobNotFound')))
       .then(setJob)
-      .catch(err => setError(err.message));
+      .catch(err => setError(err));
   }, [id, t]);
 
-  // Statut favori
   useEffect(() => {
     if (!user || !token) return;
     fetch(`${import.meta.env.VITE_API_URL}/api/favorites/${id}`, {
@@ -78,45 +73,52 @@ export default function JobDetails() {
   const canDelete = isOwner || isAdmin;
 
   const daysArray = Array.isArray(job.days) ? job.days : [];
-  const cfArray = Array.isArray(job.custom_fields) ? job.custom_fields : [];
+  const cfArray   = Array.isArray(job.custom_fields) ? job.custom_fields : [];
 
   return (
     <div className="container job-details-page">
       <div className="details-header">
-        <button onClick={() => navigate('/')} className="back-button">
-          {t('backToList')}
-        </button>
-        <div className="header-actions">
+        <div className="header-left">
+          <button onClick={() => navigate('/')} className="back-button">
+            {t('backToList')}
+          </button>
           {user && (
             <button onClick={handleToggleFav} className={`fav-btn ${isFav ? 'fav-on' : ''}`}>
               {isFav ? t('removeFavorite') : t('addFavorite')}
             </button>
           )}
-          {canDelete && (
-            <button onClick={handleDelete} className="delete-button">
-              {t('delete')}
-            </button>
-          )}
         </div>
+        {canDelete && (
+          <button onClick={handleDelete} className="delete-button">
+            {t('delete')}
+          </button>
+        )}
       </div>
 
       <div className="job-card">
         <h2>{job.title}</h2>
-        <div className="meta-row">
-          <p><strong>{t('type')}:</strong> {t(job.contract_type)}</p>
-          <p><strong>{t('location')}:</strong> {job.location}</p>
-          <p><strong>{t('contact')}:</strong> {job.contact}</p>
-        </div>
 
-        <div className="details-grid">
-          {job.schedule && <p><strong>{t('schedule')}:</strong> {job.schedule}</p>}
-          {daysArray.length > 0 && <p><strong>{t('days')}:</strong> {daysArray.map(d => t(d)).join(', ')}</p>}
-          {job.salary && <p><strong>{t('salary')}:</strong> {job.salary}</p>}
-          {job.duration && <p><strong>{t('duration')}:</strong> {job.duration}</p>}
-          {job.start_date && <p><strong>{t('startDate')}:</strong> {job.start_date}</p>}
-          {job.end_date && <p><strong>{t('endDate')}:</strong> {job.end_date}</p>}
-          {job.full_time !== undefined && job.contract_type === 'contract' && <p><strong>{t('fullTime')}:</strong> {job.full_time ? t('yes') : t('no')}</p>}
-          {cfArray.map((f, i) => <p key={i}><strong>{f.label}:</strong> {f.value}</p>)}
+        <div className="meta-details-wrapper">
+          <div className="meta-column">
+            <p><strong>{t('type')}:</strong> {t(job.contract_type)}</p>
+            <p><strong>{t('location')}:</strong> {job.location}</p>
+            <p><strong>{t('contact')}:</strong> {job.contact}</p>
+          </div>
+
+          <div className="details-column">
+            {job.schedule && <p><strong>{t('schedule')}:</strong> {job.schedule}</p>}
+            {daysArray.length > 0 && <p><strong>{t('days')}:</strong> {daysArray.map(d => t(d)).join(', ')}</p>}
+            {job.salary && <p><strong>{t('salary')}:</strong> {job.salary}</p>}
+            {job.duration && <p><strong>{t('duration')}:</strong> {job.duration}</p>}
+            {job.start_date && <p><strong>{t('startDate')}:</strong> {job.start_date}</p>}
+            {job.end_date && <p><strong>{t('endDate')}:</strong> {job.end_date}</p>}
+            {job.full_time !== undefined && job.contract_type === 'contract' && (
+              <p><strong>{t('fullTime')}:</strong> {job.full_time ? t('yes') : t('no')}</p>
+            )}
+            {cfArray.map((f, i) => (
+              <p key={i}><strong>{f.label}:</strong> {f.value}</p>
+            ))}
+          </div>
         </div>
 
         {job.description && (
