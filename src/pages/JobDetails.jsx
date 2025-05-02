@@ -26,7 +26,7 @@ export default function JobDetails() {
       .catch(err => setError(err.message));
   }, [id, t]);
 
-  // Récupérer le statut favori
+  // Favori
   useEffect(() => {
     if (!user || !token) return;
     fetch(`${import.meta.env.VITE_API_URL}/api/favorites/${id}`, {
@@ -38,18 +38,14 @@ export default function JobDetails() {
       .catch(() => setIsFav(false));
   }, [id, user, token]);
 
-  // Basculer favori
   const handleToggleFav = async () => {
-    if (!user || !token) {
-      alert(t('mustLogin'));
-      return;
-    }
+    if (!user || !token) return alert(t('mustLogin'));
     const method = isFav ? 'DELETE' : 'POST';
     try {
-      const res = await fetch(
-        `${import.meta.env.VITE_API_URL}/api/favorites/${id}`,
-        { method, headers: { 'Authorization': `Bearer ${token}` } }
-      );
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/favorites/${id}`, {
+        method,
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
       if (res.ok) setIsFav(f => !f);
       else if (res.status === 401) alert(t('mustLogin'));
     } catch {
@@ -58,9 +54,7 @@ export default function JobDetails() {
   };
 
   const handleDelete = async () => {
-    if (!user) {
-      alert(t('mustLogin')); return;
-    }
+    if (!user) return alert(t('mustLogin'));
     if (!window.confirm(t('confirmDelete'))) return;
     try {
       const res = await fetch(
@@ -68,7 +62,6 @@ export default function JobDetails() {
         {
           method: 'DELETE',
           headers: {
-            'Content-Type': 'application/json',
             'Authorization': `Bearer ${token}`
           }
         }
@@ -88,47 +81,61 @@ export default function JobDetails() {
   const isOwner = user && job.created_by === user.email;
   const isAdmin = user && user.role === 'admin';
   const canDelete = isOwner || isAdmin;
-  // Assurer que custom_fields est un array
+
+  const daysArray = Array.isArray(job.days) ? job.days : [];
   const cfArray = Array.isArray(job.custom_fields) ? job.custom_fields : [];
 
   return (
     <div className="container job-details-page">
+      {/* Header actions */}
       <div className="details-header">
         <button onClick={() => navigate('/')} className="back-button">
           ← {t('backToList')}
         </button>
-        {user && (
-          <button onClick={handleToggleFav} className={`fav-btn ${isFav ? 'fav-on' : ''}`}>
-            {isFav ? t('removeFavorite') : t('addFavorite')}
-          </button>
-        )}
-        {canDelete && (
-          <button onClick={handleDelete} className="delete-button">
-            🗑 {t('delete')}
-          </button>
-        )}
+        <div className="header-actions">
+          {user && (
+            <button onClick={handleToggleFav} className={`fav-btn ${isFav ? 'fav-on' : ''}`}>
+              {isFav ? t('removeFavorite') : t('addFavorite')}
+            </button>
+          )}
+          {canDelete && (
+            <button onClick={handleDelete} className="delete-button">
+              🗑 {t('delete')}
+            </button>
+          )}
+        </div>
       </div>
 
+      {/* Main card */}
       <div className="job-card">
         <h2>{job.title}</h2>
-        <p><strong>{t('location')}:</strong> {job.location}</p>
-        <p><strong>{t('type')}:</strong> {t(job.contract_type)}</p>
-        {job.schedule && <p><strong>{t('schedule')}:</strong> {job.schedule}</p>}
-        {job.days?.length > 0 && (
-          <p><strong>{t('days')}:</strong> {job.days.map(d => t(d)).join(', ')}</p>
+
+        {/* Métadonnées */}
+        <div className="meta-row">
+          <p><span className="icon">💼</span>{t(job.contract_type)}</p>
+          <p><span className="icon">📍</span>{job.location}</p>
+          <p><span className="icon">✉️</span>{job.contact}</p>
+        </div>
+
+        {/* Détails supplémentaires */}
+        <div className="details-grid">
+          {job.schedule && <p><strong>{t('schedule')}:</strong> {job.schedule}</p>}
+          {daysArray.length > 0 && <p><strong>{t('days')}:</strong> {daysArray.map(d => t(d)).join(', ')}</p>}
+          {job.salary && <p><strong>{t('salary')}:</strong> {job.salary}</p>}
+          {job.duration && <p><strong>{t('duration')}:</strong> {job.duration}</p>}
+          {job.start_date && <p><strong>{t('startDate')}:</strong> {job.start_date}</p>}
+          {job.end_date && <p><strong>{t('endDate')}:</strong> {job.end_date}</p>}
+          {job.full_time !== undefined && job.contract_type === 'contract' && <p><strong>{t('fullTime')}:</strong> {job.full_time ? t('yes') : t('no')}</p>}
+          {cfArray.map((f, i) => <p key={i}><strong>{f.label}:</strong> {f.value}</p>)}
+        </div>
+
+        {/* Description */}
+        {job.description && (
+          <div className="description">
+            <h3>{t('description')}</h3>
+            <p>{job.description}</p>
+          </div>
         )}
-        {job.salary && <p><strong>{t('salary')}:</strong> {job.salary}</p>}
-        {job.duration && <p><strong>{t('duration')}:</strong> {job.duration}</p>}
-        {job.start_date && <p><strong>{t('startDate')}:</strong> {job.start_date}</p>}
-        {job.end_date && <p><strong>{t('endDate')}:</strong> {job.end_date}</p>}
-        {job.full_time !== undefined && job.contract_type === 'contract' && (
-          <p><strong>{t('fullTime')}:</strong> {job.full_time ? t('yes') : t('no')}</p>
-        )}
-        <p><strong>{t('contact')}:</strong> {job.contact}</p>
-        <p style={{ marginTop: '1rem' }}>{job.description}</p>
-        {cfArray.length > 0 && cfArray.map((f, i) => (
-          <p key={i}><strong>{f.label}:</strong> {f.value}</p>
-        ))}
       </div>
     </div>
   );
