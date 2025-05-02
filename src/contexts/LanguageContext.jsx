@@ -86,7 +86,9 @@ const translations = {
     showOptional:      "Show options",
     hideOptional:      "Hide options",
     showMore:          "Show more",
-    showLess:          "Show less"
+    showLess:          "Show less",
+    addFavorite:     "Add to favorites",
+    removeFavorite:  "Remove from favorites"
   },
   fr: {
     welcome: "Annonces étudiantes disponibles",
@@ -173,7 +175,9 @@ const translations = {
     hideOptional:      "Masquer options",
     // Détails
     showMore:          "Afficher plus",
-    showLess:          "Réduire"
+    showLess:          "Réduire",
+    addFavorite:     "Ajouter aux favoris",
+    removeFavorite:  "Retirer des favoris"
   },
   nl: {
     welcome: "Beschikbare studentenjobs",
@@ -261,7 +265,9 @@ const translations = {
     hideOptional:      "Opties verbergen",
     // Details
     showMore:          "Meer weergeven",
-    showLess:          "Minder weergeven"
+    showLess:          "Minder weergeven",
+    addFavorite:     "Toevoegen aan favorieten",
+    removeFavorite:  "Verwijderen uit favorieten"
   }
 };
 
