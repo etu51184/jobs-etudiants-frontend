@@ -82,11 +82,6 @@ export default function JobDetails() {
           <button onClick={() => navigate('/')} className="back-button">
             {t('backToList')}
           </button>
-          {user && (
-            <button onClick={handleToggleFav} className={`fav-btn ${isFav ? 'fav-on' : ''}`}>
-              {isFav ? t('removeFavorite') : t('addFavorite')}
-            </button>
-          )}
         </div>
         {canDelete && (
           <button onClick={handleDelete} className="delete-button">
@@ -96,6 +91,16 @@ export default function JobDetails() {
       </div>
 
       <div className="job-card">
+        {user && (
+          <button
+            onClick={handleToggleFav}
+            className={`fav-btn-floating ${isFav ? 'fav-on' : ''}`}
+            title={isFav ? t('removeFavorite') : t('addFavorite')}
+          >
+            {isFav ? '💚' : '🤍'}
+          </button>
+        )}
+
         <h2>{job.title}</h2>
 
         <div className="meta-details-wrapper">

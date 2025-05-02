@@ -150,3 +150,28 @@
     flex-direction: column;
   }
 }
+
+.fav-btn-floating {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  background: none;
+  border: none;
+  font-size: 1.8rem;
+  cursor: pointer;
+  transition: transform 0.2s ease, color 0.2s ease;
+  color: #eaeaea;
+  z-index: 10;
+}
+
+.fav-btn-floating:hover {
+  transform: scale(1.2);
+}
+
+.fav-btn-floating.fav-on {
+  color: #00cc66;
+}
+
+.job-card {
+  position: relative;
+}
